@@ -1,7 +1,7 @@
 # mySacredGeometryOpenSCADModels
 
-This is basically my personnal directory of Sacred geometry models intended to be 3D printed. There's a bit of french here and there, because, well.. I'm french.
-
+This is basically my personnal directory of Sacred geometry models intended to be 3D printed. There's a lot of french, because, well.. I'm french.
+These are not intended to be user friendly. I made those for a friend (and also for me) and this is designed for a specific purpose. So you likely won't have any use of this.
 
 ## LICENSE
 
