@@ -3,14 +3,15 @@ externalRadius = 50;
 //internalRdius = 23.117; // Pour épaisseur paroi 1.5 mm
 paroi = 1.5;
 diametreTrouBouchon = 1.5;
-bouchonRadiusInscritOffset = 0.2;
+bouchonRadiusInscritOffset = 0.5;
 r = 0.19; // résolution d'impression sur l'axe Z
 
 //ico_creux();
 //decoupe_bouchon();
 corps_ouvert();
-bouchon();
+//bouchon();
 //trou();
+//support();
 
 function ico_ext_radius(arete) = 
     arete*1/4*(sqrt(10+2*sqrt(5)));
@@ -52,7 +53,7 @@ echo(bouchonRayonCirconscritOffset);
 
 
 module corps_ouvert() {
-    //rotate([180, 0, 0])
+//    rotate([0, 37.4, 0])
 	difference() {
 		ico_creux();
 		decoupe_bouchon();
@@ -105,6 +106,17 @@ module decoupe_bouchon(radiusOffset=0) {
 module decoupe_feuillure(scale=1) {
 	rotate([0,0,60]) translate([0,0,ico_int_radius(arete)-paroi-0.1])
 		cylinder(2*paroi, r=ico_rayon_circonscrit_face(ico_arete_from_ext_radius(internalRadius)), $fn=3);
+}
+
+module support() {
+  $fn=90;
+    difference() {
+      translate([0,0,-externalRadius*0.885])
+        cylinder(externalRadius*0.27, r=externalRadius*0.4, center=true);
+      translate([0,0,-externalRadius*0.9])
+        cylinder(externalRadius, r=externalRadius*0.4-2, center=true);
+      corps_ouvert();
+    }
 }
 
 module icosahedron(rad=1) {
