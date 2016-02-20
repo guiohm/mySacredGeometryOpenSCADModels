@@ -27,7 +27,12 @@ function dodeca_sphere_inscrite_radius(a) =
     a*sqrt(5/8+11/(8*sqrt(5)));
     
 function dodeca_arete_from_sphere_inscrite(radius) = 
-    radius/sqrt(5/8+11/(8*sqrt(5)));    
+    radius/sqrt(5/8+11/(8*sqrt(5)));
+
+areteInt = dodeca_arete_from_sphere_inscrite(
+            dodeca_sphere_inscrite_radius(arete)-paroi);
+
+echo("arete int: ", areteInt);
 
 spike = [
     2.3417, // Etoilé, scale 1 is arete = 1.236 mm, diametre = 6.24 mm, arete pyramide = 2 mm
@@ -64,10 +69,6 @@ module corps_ouvert() {
 }
 
 module poly_creux() {
-    areteInt = dodeca_arete_from_sphere_inscrite(dodeca_sphere_inscrite_radius(arete)-paroi);
-                         
-    echo("arete int: ", areteInt);
-    
     difference() {
         small_stellated_dodecahedron(spike[forme_ID], arete);
         small_stellated_dodecahedron(spike[forme_ID], areteInt);
