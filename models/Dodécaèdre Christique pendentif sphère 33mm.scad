@@ -2,7 +2,6 @@
 diameter = 33;
 creux = 1; // creux ou plein || 1 ou 0
 paroi = 1;
-echelleReductionAjustementBouchon = 0.972;
 bouchon = 1; // 1 ou 0
 corps = 0; // 1 ou 0
 rotate_body = 0;
@@ -26,25 +25,25 @@ forme_ID = 1;
 
 /////////
 
-function dodeca_ext_radius(a) = 
+function dodeca_ext_radius(a) =
     a/2*(sqrt(2));
-    
-function dodeca_inradius(a) = 
+
+function dodeca_inradius(a) =
     a*sqrt(5/8+11/(8*sqrt(5)));
-    
-function dodeca_arete_from_inradius(radius) = 
+
+function dodeca_arete_from_inradius(radius) =
     radius/sqrt(5/8+11/(8*sqrt(5)));
-    
+
 function christic_arete_from_external_diameter(diam) =
     diam/(sqrt((5/2)+(11/10)*sqrt(5))+2*sqrt((5-sqrt(5))/10));
 
 // rayon cercle inscrit
 function polygon_apothem(arete, sides) =
   arete/(2*tan(180/sides));
-  
+
 function polygon_apothem_from_circumradius(circumradius, sides) =
   circumradius*cos(180/sides);
-  
+
 function polygon_circumradius_from_apothem(apothem, sides) =
   apothem/cos(180/sides);
 
@@ -54,10 +53,10 @@ areteInt = dodeca_arete_from_inradius(
 dodeca_inradius = dodeca_inradius(arete);
 
 decoupe_bouchon_radius = polygon_circumradius_from_apothem(
-                          polygon_apothem(arete, 5) - paroi+1*r, 
+                          polygon_apothem(arete, 5) - paroi+1*r,
                           5);
 bouchon_radius = polygon_circumradius_from_apothem(
-                          polygon_apothem(arete, 5) - paroi+1*r - bouchonOffset, 
+                          polygon_apothem(arete, 5) - paroi+1*r - bouchonOffset,
                           5);
 
 echo("arete: ", arete);
@@ -75,7 +74,7 @@ spike = [
 
 if (forme_ID == 4) {
     Animate();
-} else {  
+} else {
     if (creux == 0) {
         small_stellated_dodecahedron(spike[forme_ID], small_stellated_dodecahedron);
     } else {
@@ -95,13 +94,13 @@ if (forme_ID == 4) {
 
 module corps_ouvert() {
 
-	difference() {
-		poly_creux();
-		decoupe_bouchon(decoupe_bouchon_radius);
+    difference() {
+        poly_creux();
+        decoupe_bouchon(decoupe_bouchon_radius);
     if (bottom_hole == 1) {
         bottom_hole();
     }
-	}
+    }
 }
 
 module poly_creux() {
@@ -112,22 +111,22 @@ module poly_creux() {
 }
 
 module decoupe_bouchon(radius) {
-	rotate([0,0,36]) translate([0,0, dodeca_inradius])
-		cylinder(99, r=arete*0.853, $fn=5, center=false);
-	rotate([0,0,36]) translate([0,0, dodeca_inradius-paroi])
-		#cylinder(paroi, r=radius, $fn=5, center=false);
+    rotate([0,0,36]) translate([0,0, dodeca_inradius])
+        cylinder(99, r=arete*0.853, $fn=5, center=false);
+    rotate([0,0,36]) translate([0,0, dodeca_inradius-paroi])
+        #cylinder(paroi, r=radius, $fn=5, center=false);
 }
 
 module supplement_feuillure_bouchon() {
     rotate([0,0,36]) translate([0,0, dodeca_inradius-paroi-1])
-    difference() {   
-		cylinder(paroi+1, r=bouchon_radius, $fn=5, center=false);
-		cylinder(paroi+1, r=bouchon_radius-3*r, $fn=5, center=false);
+    difference() {
+        cylinder(paroi+1, r=bouchon_radius, $fn=5, center=false);
+        cylinder(paroi+1, r=bouchon_radius-3*r, $fn=5, center=false);
     }
 }
 
 module bouchon() {
-	difference () {
+    difference () {
         intersection() {
             union() {
                 poly_creux();
@@ -135,12 +134,12 @@ module bouchon() {
             }
             decoupe_bouchon(bouchon_radius);
         }
-	}
+    }
 }
 
 module bottom_hole() {
-	rotate([0,0,0]) translate([0,0, -dodeca_inradius])
-		#cylinder(dodeca_inradius, d=bottom_hole_diameter, $fn=20, center=true);
+    rotate([0,0,0]) translate([0,0, -dodeca_inradius])
+        #cylinder(dodeca_inradius, d=bottom_hole_diameter, $fn=20, center=true);
 }
 
 // }}
@@ -186,7 +185,7 @@ module small_stellated_dodecahedron(scale, ar)
 {
 a=scale*0.61803;
 b=scale*0.38197;
-    
+
 length = ar ? ar : arete;
 echo("length:", length);
 // scale(1) => arete 1.236 mm
