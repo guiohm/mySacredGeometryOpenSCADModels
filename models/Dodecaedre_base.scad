@@ -14,17 +14,25 @@
 // You want to uncomment this...
 // include <Dodecaedre_base.scad>;
 
-epaisseurParoi = 1.5;
-diametreTrouBouchon = 1.6;
-bouchonOffset = 0.3;
 r = 0.19; // résolution d'impression sur l'axe Z
+epaisseurParoi = 1.5;
+bottom_hole = 1; // on || off
+bottom_hole_diameter = 1.6;
+
+// distance entre la paroi extérieure et la découpe
+// minimum semble etre >nozzle_diameter pour Zortrax M200
+offset_decoupe_bouchon = 0.42;
+bouchonOffset = 0.3;
+
+// Permet meilleur encastrement du bouchon pour ne pas qu'il
+// dépasse après collage
+decoupeZOffset = -r;
 
 // dode_creux();
-// decoupe_bouchon();
 // corps_ouvert();
-// bouchon_avec_attache();
 // bouchon();
 // bouchon_trou();
+// bouchon_avec_attache();
 
 
 ////////////////////
@@ -66,10 +74,10 @@ diameter = _diameter ? _diameter : 2*dode_circumradius(arete);
 hauteurExt = dode_inradius(arete);
 hauteurInt = hauteurExt - 2 * epaisseurParoi;
 decoupe_bouchon_radius = polygon_circumradius_from_apothem(
-              polygon_apothem(arete, 5) - 1*r,
+              polygon_apothem(arete, 5) - offset_decoupe_bouchon,
               5);
 bouchon_radius = polygon_circumradius_from_apothem(
-              polygon_apothem(arete, 5) - 1*r - bouchonOffset,
+              polygon_apothem(arete, 5) - offset_decoupe_bouchon - bouchonOffset,
               5);
 
 echo(arete=arete);
@@ -81,9 +89,11 @@ echo(bouchon_radius=bouchon_radius);
 
 module corps_ouvert() {
   difference() {
-    dode_creux();
-    #decoupe_bouchon(decoupe_bouchon_radius);
-    #decoupe_feuillure(decoupe_bouchon_radius);
+    union() {
+      dode_creux();
+      #feuillure(decoupe_bouchon_radius);
+    }
+    #decoupe_bouchon(decoupe_bouchon_radius, decoupeZOffset);
   }
 }
 
@@ -102,18 +112,6 @@ module bouchon_avec_attache() {
   }
 }
 
-module bouchon_trou() {
-  scale([1, 1, 1])
-  difference () {
-    intersection() {
-      dode_creux();
-      decoupe_bouchon(bouchon_radius);
-    }
-    translate([0, 0, hauteurExt/2.5])
-    cylinder(30, r=diametreTrouBouchon/2, $fn=22);
-  }
-}
-
 module bouchon() {
   scale([1, 1, 1])
   difference () {
@@ -128,19 +126,27 @@ module dode_creux() {
   difference() {
     dodecahedron(hauteurExt);
     dodecahedron(hauteurInt);
+    if (bottom_hole) {
+      translate([0, 0, -hauteurExt/2])
+      cylinder(4*epaisseurParoi, d=bottom_hole_diameter, $fn=22, center=true);
+    }
   }
 }
 
-module decoupe_bouchon(radius) {
-  distance = hauteurInt/2+0*r;
+module decoupe_bouchon(radius, zOffset = 0) {
+  distance = hauteurInt/2+zOffset;
   rotate([0,0,54]) translate([0,0,distance])
-    cylinder(epaisseurParoi+0.01, r=radius, $fn=5);
+    cylinder(epaisseurParoi+1, r=radius, $fn=5);
 }
 
-module decoupe_feuillure(radius) {
-  distance = hauteurInt/2+4*r;
-  rotate([0,0,54]) translate([0,0,distance-epaisseurParoi])
-    cylinder(epaisseurParoi, r=radius-epaisseurParoi, $fn=5);
+module feuillure(radius) {
+  distance = hauteurInt/2-.8*epaisseurParoi;
+  difference() {
+    rotate([0,0,54]) translate([0,0,distance])
+      cylinder(.8*epaisseurParoi, r=radius+.5*epaisseurParoi, $fn=5);
+    rotate([0,0,54]) translate([0,0,distance])
+      cylinder(.8*epaisseurParoi, r1=radius+.5*epaisseurParoi, r2=radius-1.2*epaisseurParoi, $fn=5);
+  }
 }
 
 module dodecahedron(height) {
