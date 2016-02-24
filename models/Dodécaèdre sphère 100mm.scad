@@ -1,4 +1,3 @@
-
 // Uncomment only one of the 3 next variables.
 // The 2 other will be automagically computed.
 // _arete = 10;
@@ -7,14 +6,19 @@ _diameter = 100;
 
 include <Dodecaedre_base.scad>;
 
-epaisseurParoi = 1.5;
-diametreTrouBouchon = 1.6;
-bouchonOffset = 0.3;
 r = 0.19; // résolution d'impression sur l'axe Z
+epaisseurParoi = 1.5;
+bottom_hole = 1; // on || off
+bottom_hole_diameter = 1.6;
 
-//dode_creux();
-//decoupe_bouchon();
-corps_ouvert();
-//bouchon_avec_attache();
-//bouchon();
-//bouchon_trou();
+// distance entre la paroi extérieure et la découpe
+offset_decoupe_bouchon = 0.42;
+bouchonOffset = 0.5;
+
+// Permet meilleur encastrement du bouchon pour ne pas qu'il
+// dépasse après collage
+decoupeZOffset = -r;
+
+
+// corps_ouvert();
+bouchon();

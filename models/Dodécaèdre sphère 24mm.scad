@@ -21,5 +21,3 @@ decoupeZOffset = -r;
 
 corps_ouvert();
 // bouchon();
-// bouchon_trou();
-// bouchon_avec_attache();
