@@ -16,7 +16,7 @@
 
 r = 0.19; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.5;
-bottom_hole = 1; // on || off
+bottom_hole = 0; // on || off
 bottom_hole_diameter = 1.6;
 bouchon_hole = 0; // on || off
 bouchon_hole_diameter = 1.6;
