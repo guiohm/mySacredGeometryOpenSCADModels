@@ -18,6 +18,10 @@ r = 0.19; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.5;
 bottom_hole = 1; // on || off
 bottom_hole_diameter = 1.6;
+bouchon_hole = 0; // on || off
+bouchon_hole_diameter = 1.6;
+side_hole = 0; // on || off
+side_hole_diameter = 1.6;
 
 // distance entre la paroi extérieure et la découpe
 // minimum semble etre >nozzle_diameter pour Zortrax M200
@@ -38,6 +42,8 @@ decoupeZOffset = -r;
 ////////////////////
 //   HEADER END   //
 ////////////////////
+
+dihedral_angle = 116.56;
 
 function dode_inradius(arete) =
   arete*sqrt((5/2)+(11/10)*sqrt(5));
@@ -119,6 +125,10 @@ module bouchon() {
       dode_creux();
       decoupe_bouchon(bouchon_radius);
     }
+    if (bouchon_hole) {
+      translate([0, 0, hauteurExt/2])
+      cylinder(4*epaisseurParoi, d=bouchon_hole_diameter, $fn=22, center=true);
+    }
   }
 }
 
@@ -129,6 +139,11 @@ module dode_creux() {
     if (bottom_hole) {
       translate([0, 0, -hauteurExt/2])
       cylinder(4*epaisseurParoi, d=bottom_hole_diameter, $fn=22, center=true);
+    }
+    if (side_hole) {
+      rotate([dihedral_angle,0,0])
+      translate([0, 0, -hauteurExt/2])
+      cylinder(4*epaisseurParoi, d=side_hole_diameter, $fn=22, center=true);
     }
   }
 }
