@@ -3,18 +3,20 @@ rTrou = 4;
 rayonCol = 1.5;
 longueurCol= 20;
 longueurEmbout = 25;
-$fn=80;
+$fn=44;
+
+use <../lib/rounded_primitives.scad>;
 
 union() {
 	difference() {
 		union() {
 			embouts();
-		}		
+		}
         translate([0, 0, -r])
 			cylinder(12, 50, 50);
 		// découpe base
 		translate([0, 0, longueurEmbout+6])
-			cylinder(10, 50, 50);	
+			cylinder(10, 50, 50);
 	}
     translate([0, 0, r/3])
         cylinder(10, 20, r);
