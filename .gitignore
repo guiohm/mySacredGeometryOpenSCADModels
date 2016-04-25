@@ -2,3 +2,4 @@ backups/
 exports/
 tmp/
 .DS_Store
+*.stl
