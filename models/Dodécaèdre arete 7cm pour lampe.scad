@@ -13,8 +13,8 @@ color("green")
 //bouchon();
 //bouchon_trou();
 color("gray")
-//piedE27();
-piedE14();
+piedE27();
+//piedE14();
 
 // Modif : Ajout pentagone à coller sur les pieds déjà imprimés
 //pentagone();
@@ -69,17 +69,17 @@ module pied(diamTrou) {
             }
         }
     }
-    
+
     // base pied
     difference() {
-//        rotate([0,0,54]) translate([0,0,distance])
-//            cylinder(60, r=30, r2=50, $fn=99);
-//        rotate([0,0,54]) translate([0,0,distance])
-//            cylinder(60, r=28.5, r2=48.5, $fn=99);
-//        spirale1(distance);
+        rotate([0,0,54]) translate([0,0,distance])
+            cylinder(60, r=30, r2=50, $fn=99);
+        rotate([0,0,54]) translate([0,0,distance])
+            cylinder(60, r=28.5, r2=48.5, $fn=99);
+        // spirale1(distance);
         spirale2(distance);
-        // Passe fil        
-        translate([0,0,distance+50]) rotate([0,90,18]) 
+        // Passe fil
+        translate([0,0,distance+50]) rotate([0,90,18])
             cylinder(120, r=3.5, $fn=20);
     }
 }
@@ -135,11 +135,11 @@ module decoupe_bouchon() {
 module dodecahedron(height) {
 	scale([height,height,height]) {
 		intersection() {
-			cube([2,2,1], center = true); 
-			intersection_for(i=[0:4]) { 
+			cube([2,2,1], center = true);
+			intersection_for(i=[0:4]) {
 				rotate([0,0,72*i])
 				rotate([116.565,0,0])
-					cube([2,2,1], center = true); 
+					cube([2,2,1], center = true);
 			}
 		}
 	}
