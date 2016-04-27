@@ -11,14 +11,24 @@ echo(pent_diam=pent_diam);
 
 // translate([0,0,4])
 // test();
-main();
+// pointe_haut();
+// pointe_haut();
+pointe_bas();
 
-module main() {
+module pointe_haut() {
     rotate([0,-90,0])
     union() {
         coupelle_base();
         wall_mount();
         gussets();
+    }
+}
+module pointe_bas() {
+    rotate([0,-90,0])
+    union() {
+        coupelle_base();
+        wall_mount(36);
+        gussets_alternate();
     }
 }
 
@@ -31,9 +41,9 @@ module coupelle_base() {
     }
 }
 
-module wall_mount() {
+module wall_mount(angle) {
     difference() {
-        translate([-pent_diam*0.398,0,18]) rotate([0,-90,0])
+        translate([-pent_diam*0.398,0,18]) rotate([0,-90,0]) rotate([0,0,angle])
         cylinder(h=epaisseurParoi, d1=pent_diam*.928, d2=pent_diam*.96, $fn=5, center=false);
         translate([-pent_diam*0.398,0,38]) rotate([0,-90,0])
             #cylinder(d=4.8, h=10, $fn=22, center=true);
@@ -46,6 +56,18 @@ module gussets() {
             gusset();
             translate([0,18,0]) gusset();
             translate([0,-18,0]) gusset();
+        }
+        translate([0,0,1])
+            cylinder(r=100, h=20);
+    }
+}
+
+module gussets_alternate() {
+    difference() {
+        union() {
+            gusset();
+            translate([0,11.5,3]) gusset();
+            translate([0,-11.5,3]) gusset();
         }
         translate([0,0,1])
             cylinder(r=100, h=20);
