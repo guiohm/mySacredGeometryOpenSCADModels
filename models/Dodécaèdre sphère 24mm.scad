@@ -9,7 +9,7 @@ include <Dodecaedre_base.scad>;
 r = 0.19; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.35; //1.19
 bottom_hole = 1; // on || off
-bottom_hole_diameter = 1.4;
+bottom_hole_diameter = 1.1;
 bouchon_hole = 0; // on || off
 side_hole = 0; // on || off
 side_hole_diameter = 1;
