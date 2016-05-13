@@ -43,7 +43,7 @@ decoupeZOffset = -r;
 //   HEADER END   //
 ////////////////////
 
-dihedral_angle = 116.56;
+dihedral_angle = 116.565;
 
 function dode_inradius(arete) =
   arete*sqrt((5/2)+(11/10)*sqrt(5));
@@ -170,7 +170,7 @@ module dodecahedron(height) {
       cube([2,2,1], center = true);
       intersection_for(i=[0:4]) {
         rotate([0,0,72*i])
-        rotate([116.565,0,0])
+        rotate([dihedral_angle,0,0])
           cube([2,2,1], center = true);
       }
     }
