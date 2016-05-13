@@ -5,16 +5,20 @@ r = 0.19; // résolution d'impression sur l'axe Z
 echelleReductionAjustementBouchon = 0.985;
 hauteurInt = hauteurExt - 2 * epaisseurParoi;
 
-//dode_creux();
-//decoupe_bouchon();
-color("green")
-//corps_ouvert();
-//bouchon_avec_attache();
-//bouchon();
-//bouchon_trou();
-color("gray")
-piedE27();
+use <../lib/maths.scad>;
+
+// color("white")
+// corps_ouvert();
+// color("black")
+// piedE27();
+// render(convexity=2)
+piedE27_grande_ampoule();
 //piedE14();
+
+
+
+
+
 
 // Modif : Ajout pentagone à coller sur les pieds déjà imprimés
 //pentagone();
@@ -36,37 +40,26 @@ module corps_ouvert() {
 	}
 }
 
-
-
 module piedE27() {
     pied(diamTrou=42);
+}
+module piedE27_grande_ampoule() {
+    pied_grande_ampoule(diamTrou=42);
 }
 module piedE14() {
     pied(diamTrou=30);
 }
 
+distance = hauteurExt/2;
+epaisseur = 2;
 module pied(diamTrou) {
-    distance = hauteurExt/2;
-    epaisseur = 2;
     difference() {
         union() {
-            // fermeture (face) dodécaèdre
-            rotate([0,0,54]) translate([0,0,distance-epaisseur])
-                cylinder(epaisseur, r=hauteurExt/2.565, r2=hauteurExt/2.618, $fn=5);
-            // Feuillure
-                rotate([0,0,54]) translate([0,0,distance-2*epaisseur])
-                    cylinder(epaisseur, r=hauteurExt/2.65, r2=hauteurExt/2.63, $fn=5);
+            pentagone_feuillure();
         }
         union() {
-            // Trou douille
-            rotate([0,0,54]) translate([0,0,distance-2*epaisseur])
-                cylinder(2*epaisseur+0.2, r=diamTrou/2, $fn=50);
-            // ouvertures
-            for (i = [1:5]) {
-              rotate([0, 0, 360/5*i])
-                translate([0, 0, distance-epaisseur-10]) rotate([0,0,0])
-                  decoupe_demi_cercle();
-            }
+            trou_douille(diamTrou);
+            ouvertures();
         }
     }
 
@@ -77,9 +70,66 @@ module pied(diamTrou) {
         rotate([0,0,54]) translate([0,0,distance])
             cylinder(60, r=28.5, r2=48.5, $fn=99);
         // spirale1(distance);
-        spirale2(distance);
+        // spirale2(distance);
         // Passe fil
         translate([0,0,distance+50]) rotate([0,90,18])
+            cylinder(120, r=3.5, $fn=20);
+    }
+}
+
+module pied_grande_ampoule(diamTrou) {
+    difference() {
+        union() {
+            pentagone_feuillure();
+
+            // partie haute
+            difference() {
+                translate([0, 0, 220]) rotate([180])
+                    parabolic_shell(43, 0.08, 24, 6);
+                translate([0, 0, distance - 51])
+                    cube(size=100, center=true);
+                translate([0, 0, distance + 50 + 76])
+                    cube(size=100, center=true);
+            }
+            // partie haute
+            // rotate([0,0,54]) translate([0,0,distance])
+            //     cylinder(75, r=43.5, r2=30, $fn=29);
+
+            // partie basse
+            difference() {
+                translate([0, 0, 123])
+                    parabolic_shell(50, 0.04, 24, 6);
+                translate([0, 0, distance - 50 + 75])
+                    cube(size=100, center=true);
+                translate([0, 0, distance + 50 + 75 + 60])
+                    cube(size=100, center=true);
+            }
+            // partie basse
+            // rotate([0,0,54]) translate([0,0,distance+75])
+            //     cylinder(60, r=30, r2=44, $fn=29);
+
+            // plateforme douille
+            translate([0,0, distance + 75])
+                cylinder(h=3, d=60, $fn=20);
+        }
+        render(convexity=2)
+        union() {
+            translate([0,0,78])
+                trou_douille(diamTrou);
+            // ouverture ampoule
+            trou_douille(84);
+
+            // partie haute
+            // rotate([0,0,54]) translate([0,0,distance])
+            //     cylinder(75, r=42, r2=28.5, $fn=29);
+            // partie basse
+            // rotate([0,0,54]) translate([0,0,distance+75])
+            //     cylinder(60, r=28.5, r2=42.5, $fn=29);
+        }
+        // spirale1(distance);
+        // spirale2(distance);
+        // Passe fil
+        translate([0,0,distance+50+75]) rotate([0,90,18])
             cylinder(120, r=3.5, $fn=20);
     }
 }
@@ -104,6 +154,28 @@ module spirale2(distance) {
                     circle(d=36, $fn=5, center = true);
                 }
             }
+}
+
+module pentagone_feuillure() {
+    // fermeture (face) dodécaèdre
+    rotate([0,0,54]) translate([0,0,distance-epaisseur])
+        cylinder(epaisseur, r=hauteurExt/2.565, r2=hauteurExt/2.618, $fn=5);
+    // Feuillure
+    rotate([0,0,54]) translate([0,0,distance-2*epaisseur])
+        cylinder(epaisseur, r=hauteurExt/2.65, r2=hauteurExt/2.63, $fn=5);
+}
+
+module trou_douille(diamTrou) {
+    rotate([0,0,54]) translate([0,0,distance-2*epaisseur])
+        cylinder(2*epaisseur+0.2, r=diamTrou/2, $fn=50);
+}
+
+module ouvertures() {
+    for (i = [1:5]) {
+      rotate([0, 0, 360/5*i])
+        translate([0, 0, distance-epaisseur-10]) rotate([0,0,0])
+          decoupe_demi_cercle();
+    }
 }
 
 //decoupe_demi_cercle();
