@@ -15,12 +15,12 @@ echo(areteInterieure);
 //forme_creuse();
 //decoupe_bouchon();
 corps_ouvert();
-bouchon();
+// bouchon();
 
 
 module corps_ouvert() {
-    render()
-    //rotate([180-51.8, 0, 0])
+    render(convexity=2)
+    // rotate([180-51.8, 0, 0])
 	difference() {
 		forme_creuse();
 		decoupe_bouchon();
@@ -88,7 +88,7 @@ in=25.4; //inches to millimeter conversion
 
 
 /***** ROTATION & TRANSLATION SHORTCUTS  *****
-Used for common, easy to type single axis moves 
+Used for common, easy to type single axis moves
 with names I can actually remember (since I never
 get the rotation directions right on first try. :o)   */
 
@@ -111,13 +111,13 @@ function forward (angle=90) =
 		[angle,0,0];
 
 function push(distance=1) =
-		[0,distance,0]; 
+		[0,distance,0];
 
 function lift(distance=1) =
 		[0,0,distance];
 
 function slide(distance=1) =
-		[distance,0,0]; 
+		[distance,0,0];
 
 /*************************************************
 BASIC ENGINEERING SHAPES */
@@ -128,7 +128,7 @@ module hex (width=10, height=10, flats= true, center=false){
 }
 
 module equilateralTriangle (side=10, height=10, center=false){
-	translate(center==true ? [-side/2,-sqrt(3)*side/6,-height/2] : [0,0,0])	
+	translate(center==true ? [-side/2,-sqrt(3)*side/6,-height/2] : [0,0,0])
 		linear_extrude(height=height)
 			polygon(points=[[0,0],[side,0],[side/2,sqrt(3)*side/2]]);
 }
@@ -147,19 +147,19 @@ module pyramid(side=10, height=-1, square=false, centerHorizontal=true, centerVe
 	translate(vert+horiz){
 		if (square == true){
 			polyhedron (	points = [[0,0,0],[0,side,0],[side,side,0],
-								[side,0,0],[side/2,side/2,mHeight]], 
-						faces = [[1,0,2], [2,0,3], [0,4,3], 
+								[side,0,0],[side/2,side/2,mHeight]],
+						faces = [[1,0,2], [2,0,3], [0,4,3],
 								[3,4,2], [2,4,1], [1,4,0]]);
 		}
 		if (square != true){
 			polyhedron (	points = [[0,0,0],[side,0,0],[side/2,sqrt(3)*side/2,0],
-								[side/2,sqrt(3)*side/6,mHeight]], 
-						faces = [[0,1,2], [1,0,3], [2,1,3],[2,3,0]]);			
+								[side/2,sqrt(3)*side/6,mHeight]],
+						faces = [[0,1,2], [1,0,3], [2,1,3],[2,3,0]]);
 		}
 }	}
 
 module tube(r=2, thickness=1, height=1, center=false, outline=false){
-	translate(lift(center == true ?  0 : 0.5*height)) 
+	translate(lift(center == true ?  0 : 0.5*height))
 	difference(){
 		cylinder(r=r, h=height, center=true, $fn=resolution(r));
 		if (outline!=true)
@@ -179,19 +179,19 @@ module roundRect (size=[10,10,10], round=3, center=false){
 				cylinder (r=radius, h=size[2]);
 			translate([radius,size[1]-radius,0])
 				cylinder (r=radius, h=size[2]);
-			translate([0,radius,0]) 
+			translate([0,radius,0])
 				cube(size-[0,radius*2,0]);
-			translate([radius,0,0]) 
+			translate([radius,0,0])
 				cube(size-[radius*2,0,0]);
 }	}	}
 
 module keyhole(r1, r2, length, height) {
 	translate ([0,length/2,0]) union(){
-		translate ([0,length/2-r1,0]) 
+		translate ([0,length/2-r1,0])
 			cylinder (r=r1, height, $fn=resolution(r1));
-		translate ([0,0-(length/2-r2),0]) 
+		translate ([0,0-(length/2-r2),0])
 			cylinder (r=r2, height, $fn=resolution(r2));
-		translate ([-r1,r1-length/2,0]) 
+		translate ([-r1,r1-length/2,0])
 			cube ([r1*2,length-(r1*2),height]);
 	}
 }
@@ -203,14 +203,14 @@ module slot(size=[4,10,1], startRound=true, endRound=true, centerXYZ=[1,0,0]){
 	end= endRound==true ? radius : 0;
 	translate([-size[0]/2*centerXYZ[0],
 			-size[1]/2*centerXYZ[1],
-			-size[2]/2*centerXYZ[2]]) 
+			-size[2]/2*centerXYZ[2]])
 	union(){
 		translate([0,start,0]) cube (size-[0,start+end,0]);
 		if (startRound==true) translate ([radius,radius,0])
 			cylinder (r=size[0]/2, h=size[2]);
 		if (endRound==true) translate ([radius,size[1]-radius,0])
 			cylinder (r=size[0]/2, h=size[2]);
-	
+
 }	}
 
 module dovetail (width=9, height=10, male=true){
@@ -229,9 +229,9 @@ module teardrop(radius=5, length=10, angle=90) {
 		linear_extrude(height = length, center = true, convexity = radius, twist = 0)
 			circle(r = radius, center = true);
 		linear_extrude(height = length, center = true, convexity = radius, twist = 0)
-			projection(cut = false) rotate([0, -angle, 0]) 
-			translate([0, 0, radius * sin(45) * 1.5]) 
-			cylinder(h = radius * sin(45), r1 = radius * sin(45), r2 = 0, 
+			projection(cut = false) rotate([0, -angle, 0])
+			translate([0, 0, radius * sin(45) * 1.5])
+			cylinder(h = radius * sin(45), r1 = radius * sin(45), r2 = 0,
 					center = true);
 	}
 }
@@ -263,7 +263,7 @@ module capBolt (size="M3", length= 16, center=false, pos=[0,0,0])	{
 	if (tableRow(size) == -1)	echo(str("capBolt ERROR: size of '",size,"' is undefined."));
 	diameter = tableEntry (size, "headDiameter");
 	head = tableEntry (size, "headThickness");
-	stud = tableEntry (size, "studDiameter");	
+	stud = tableEntry (size, "studDiameter");
 	translate(pos+[0,0,center == true ? -length/2 : 0]) union()	{
 		translate(lift(-head)){
 			cylinder(r=diameter/2, h=head, $fn=resolution(diameter/2));
@@ -274,7 +274,7 @@ module hexBolt (size="M3", length= 16, center=false, pos=[0,0,0])	{
 	if (tableRow(size) == -1)	echo(str("hexBolt ERROR: size of '",size,"' is undefined."));
 	width = tableEntry (size, "headDiameter");
 	head = tableEntry (size, "headThickness");
-	stud = tableEntry (size, "studDiameter");	
+	stud = tableEntry (size, "studDiameter");
 	translate(pos+[0,0,center == true ? -length/2 : 0]) union()	{
 		translate(lift(-head)){
 			hex(width, head, $fn=6);
@@ -282,13 +282,13 @@ module hexBolt (size="M3", length= 16, center=false, pos=[0,0,0])	{
 }	}	}
 
 module bearing (size="Skate", center=false, outline=false, pos=[0,0,0]){
-// The Elmom MCAD has a much better version of a bearing module.  
+// The Elmom MCAD has a much better version of a bearing module.
 // This is a basic donut shape but gets the job done for construction.
 	if (tableRow(size) == -1)	echo(str("bearing ERROR: type of '",type,"' is undefined."));
 	hole = tableEntry (size, "bearingID");
 	thickness = tableEntry (size, "bearingThickness");
 	diameter = tableEntry (size, "bearingOD");
-	translate(pos) 
+	translate(pos)
 		tube(diameter/2, (diameter-hole)/2, thickness, center, outline);
 }
 
@@ -297,19 +297,19 @@ module bearing (size="Skate", center=false, outline=false, pos=[0,0,0]){
 The following functions contain various engineering tables but you can add whatever data
 you'd like.  I've also used it for translation landmarks.  The table itself is arranged with an array of arrays (vectors) and stored within the "tableRow" function with each row having a string identifier.  Thus, you can retrieve a vector by name without storing a bunch of variables.
 	A second array function, called "columnNames" is simply a convenient way to refer to each element within a vector by an element name.  The values overlap, depending on what data type you're working with.  For instance, "bearingWidth" = "headThickness" = z-vector element = 2.
-	You can find a specific variable within the data, using "rowElement" that uses row, column strings to identify the element desired.  Uncomment the example below to see it in action. 
+	You can find a specific variable within the data, using "rowElement" that uses row, column strings to identify the element desired.  Uncomment the example below to see it in action.
 						*****/
 //testTable();
 		module testTable(){
 			column = "nutWidth";
 			row =	"M3";
-			
+
 			echo (str(column," is found in column #",
 				columnName(column)	));
 			echo (str("The row named ",row," contains: ",
 				tableRow(row)		));
 			echo (str("The ",column," field of the ",row," row is: ",
-				tableEntry(row,column)	));	
+				tableEntry(row,column)	));
 		}
 
 function columnName(name)=
@@ -339,9 +339,9 @@ function tableRow (name)=
 		name == "Skate" 		? [8, 22, 7] :
 	// Bolt, Nut, Washer Sizes
 	// It seems hardware size standards are loose, so these dimensions may not match your hardware.
-		name == "M2" 		? [2, 4, 2, 4, 1.6, 5.5, 0.3] :		
-		name == "M2.5" 		? [2.5, 5, 2.5, 5, 2, 7, 0.5] :		
-		name == "M3" 		? [3, 5.5, 3, 5.5, 2.4, 7, 0.5] :		
+		name == "M2" 		? [2, 4, 2, 4, 1.6, 5.5, 0.3] :
+		name == "M2.5" 		? [2.5, 5, 2.5, 5, 2, 7, 0.5] :
+		name == "M3" 		? [3, 5.5, 3, 5.5, 2.4, 7, 0.5] :
 		name == "M4" 		? [4, 7.0, 4, 7, 3.2, 9, 0.8] :
 		name == "M5" 		? [5, 8.5, 5, 8, 4.7, 10, 1] :
 		name == "M6" 		? [6, 10, 6, 10, 5.2, 12.5, 1.6 ] :
@@ -352,14 +352,14 @@ function tableRow (name)=
 	-1; //Not found in Table
 
 function tableEntry (rowName, fieldName) =
-	tableRow(rowName)[columnName(fieldName)];	
+	tableRow(rowName)[columnName(fieldName)];
 
 
 /*************************************************
 OPENSCAD INTERFACE & EXAMPLES */
 
 libEcho=true;
-if (libEcho!=false){ 
+if (libEcho!=false){
 	echo ("****************************************************************  ");
 	echo ("  'Libs' library loaded. For a list of modules, use libHelp();            ");
 	echo ("   For help with translation/rotation functions, use libMoveHelp();");
