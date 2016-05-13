@@ -3,9 +3,12 @@ creux = 1; // creux ou plein || 1 ou 0
 paroi = 1.5;
 echelleReductionAjustementBouchon = 0.972;
 bouchon = 0; // 1 ou 0
-corps = 1; // 1 ou 0
+corps = 0; // 1 ou 0
+support = 1;
 sideHole = 1;
 sideHoleDiameter = 1;
+
+use <../lib/maths.scad>;
 
 // Controle rotation viewport quand animation en route
 //$vpr = [70, 0, $t * 180];
@@ -31,6 +34,8 @@ function dodeca_sphere_inscrite_radius(a) =
 function dodeca_arete_from_sphere_inscrite(radius) =
     radius/sqrt(5/8+11/(8*sqrt(5)));
 
+circumRadius = dodeca_ext_radius(arete);
+
 spike = [
     2.3417, // Etoilé, scale 1 is arete = 1.236 mm, diametre = 6.24 mm, arete pyramide = 2 mm
     0.8944, // Christique, scale 1 is arete = 1.236 mm, diametre = 4.05 mm
@@ -47,8 +52,27 @@ if (forme_ID == 4) {
         if (corps == 1) {
             corps_ouvert();
         }
+        if (support) {
+            support();
+        }
         if (bouchon == 1) {
             bouchon();
+        }
+    }
+}
+
+module support() {
+    difference() {
+        rotate([180]) translate([0, 0, circumRadius*1.8])
+        parabolic_shell (16, 0.1, 24, 7);
+        translate([0,0, -circumRadius*6.6])
+            cube(size=50, center=true);
+        small_stellated_dodecahedron(spike[forme_ID], arete);
+
+        // holes
+        for (i=[1:5]) {
+            rotate([0, 270, i*360/5]) translate([-circumRadius*3.05,0,-10])
+            cylinder(h=20, r=7.5, center=true, $fn=3);
         }
     }
 }
