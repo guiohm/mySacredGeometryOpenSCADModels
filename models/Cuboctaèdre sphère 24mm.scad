@@ -7,13 +7,13 @@ Cpi = 3.14159;
 Cphi = (1+sqrt(5))/2;
 Cepsilon = 0.00000001;
 
-    
-function int_radius(a) = 
+
+function int_radius(a) =
     a*cos(45);
-    
-function arete_from(int_radius) = 
+
+function arete_from(int_radius) =
     int_radius/cos(45);
-    
+
 externalRadius = arete;
 internalRadius = arete_from(int_radius(arete)-paroi);
 
@@ -21,8 +21,8 @@ echo(internalRadius);
 
 //forme_creuse();
 //decoupe_bouchon();
-//corps_ouvert();
-bouchon();
+corps_ouvert();
+// bouchon();
 //trou();
 
 module corps_ouvert() {
@@ -33,7 +33,7 @@ module corps_ouvert() {
 }
 
 module bouchon() {
-    rotate([180, 0, 0])
+    // rotate([180, 0, 0])
 	scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.98])
 	difference () {
         intersection() {
@@ -131,7 +131,7 @@ edges = [
 [6,8],
 [6,9],
 [4,9]];
-// --------------------------------- 
+// ---------------------------------
 
 
 // cut holes out of shell
@@ -163,7 +163,6 @@ scale(scale)
     place_on_largest_face(sfaces,spoints)
 //    shape();
       polyhedron(spoints,sfaces);
- 
 }
 
 // ruler(10);
@@ -179,7 +178,7 @@ function m_translate(v) = [ [1, 0, 0, 0],
                             [0, 1, 0, 0],
                             [0, 0, 1, 0],
                             [v.x, v.y, v.z, 1  ] ];
-                            
+
 function m_rotate(v) =  [ [1,  0,         0,        0],
                           [0,  cos(v.x),  sin(v.x), 0],
                           [0, -sin(v.x),  cos(v.x), 0],
@@ -192,22 +191,22 @@ function m_rotate(v) =  [ [1,  0,         0,        0],
                           [-sin(v.z),  cos(v.z), 0, 0],
                           [ 0,         0,        1, 0],
                           [ 0,         0,        0, 1] ];
-                            
+
 function vec3(v) = [v.x, v.y, v.z];
 function transform(v, m)  = vec3([v.x, v.y, v.z, 1] * m);
-                            
-function matrix_to(p0, p) = 
-                       m_rotate([0, atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0]) 
-                     * m_rotate([0, 0, atan2(p[1], p[0])]) 
+
+function matrix_to(p0, p) =
+                       m_rotate([0, atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0])
+                     * m_rotate([0, 0, atan2(p[1], p[0])])
                      * m_translate(p0);
 
-function matrix_from(p0, p) = 
+function matrix_from(p0, p) =
                       m_translate(-p0)
-                      * m_rotate([0, 0, -atan2(p[1], p[0])]) 
-                      * m_rotate([0, -atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0]); 
+                      * m_rotate([0, 0, -atan2(p[1], p[0])])
+                      * m_rotate([0, -atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0]);
 
-function transform_points(list, matrix, i = 0) = 
-    i < len(list) 
+function transform_points(list, matrix, i = 0) =
+    i < len(list)
        ? concat([ transform(list[i], matrix) ], transform_points(list, matrix, i + 1))
        : [];
 
@@ -215,7 +214,7 @@ function transform_points(list, matrix, i = 0) =
 //  convert from point indexes to point coordinates
 
 function as_points(indexes,points,i=0) =
-     i < len(indexes) 
+     i < len(indexes)
         ?  concat([points[indexes[i]]], as_points(indexes,points,i+1))
         : [];
 
@@ -226,16 +225,16 @@ function normal_r(face) =
 function normal(face) =
      - normal_r(face) / norm(normal_r(face));
 
-function centre(points) = 
+function centre(points) =
       vsum(points) / len(points);
 
 // sum a list of vectors
-function vsum(points,i=0) =  
+function vsum(points,i=0) =
       i < len(points)
         ?  (points[i] + vsum(points,i+1))
         :  [0,0,0];
 
-function ssum(list,i=0) =  
+function ssum(list,i=0) =
       i < len(list)
         ?  (list[i] + ssum(list,i+1))
         :  0;
@@ -248,7 +247,7 @@ function vadd(points,v,i=0) =
         :  [];
 
 function reverse_r(v,n) =
-      n == 0 
+      n == 0
         ? [v[0]]
         : concat([v[n]],reverse_r(v,n-1));
 
@@ -270,39 +269,39 @@ function slice(v,k,i=0) =
       : [];
 
 function max(v, max=-9999999999999999,i=0) =
-     i < len(v) 
-        ?  v[i] > max 
+     i < len(v)
+        ?  v[i] > max
             ?  max(v, v[i], i+1 )
-            :  max(v, max, i+1 ) 
+            :  max(v, max, i+1 )
         : max;
 
 function min(v, min=9999999999999999,i=0) =
-     i < len(v) 
-        ?  v[i] < min 
+     i < len(v)
+        ?  v[i] < min
             ?  min(v, v[i], i+1 )
-            :  min(v, min, i+1 ) 
+            :  min(v, min, i+1 )
         : min;
 
 function project(pts,i=0) =
      i < len(pts)
         ? concat([[pts[i][0],pts[i][1]]], project(pts,i+1))
         : [];
-        
+
 function contains(n, list, i=0) =
-     i < len(list) 
+     i < len(list)
         ?  n == list[i]
            ?  true
            :  contains(n,list,i+1)
         : false;
 
-// normalize the points to have origin at 0,0,0 
-function centre_points(points) = 
+// normalize the points to have origin at 0,0,0
+function centre_points(points) =
      vadd(points, - centre(points));
 
 //scale to average radius = radius
 function normalize(points,radius) =
     points * radius /average_radius(points);
- 
+
 function select_nsided_faces(faces,nsides,i=0) =
   len(nsides) == 0
      ?  faces
@@ -311,7 +310,7 @@ function select_nsided_faces(faces,nsides,i=0) =
              ? concat([faces[i]],  select_nsided_faces(faces,nsides,i+1))
              : select_nsided_faces(faces,nsides,i+1)
          : [];
-         
+
 function longest_edge(face,max=-1,i=0) =
        i < len(face)
           ?  norm(face[i] - face[(i+1)% len(face)]) > max
@@ -320,14 +319,14 @@ function longest_edge(face,max=-1,i=0) =
           : max ;
 
 function point_edges(point,edges,i=0) =
-    i < len(edges) 
+    i < len(edges)
        ? point == edges[i][0] || point == edges[i][1]
          ? concat([edges[i]], point_edges(point,edges,i+1))
          : point_edges(point,edges,i+1)
        : [];
 
 function select_nedged_points(points,edges,nedges,i=0) =
-     i < len(points) 
+     i < len(points)
          ?  len(point_edges(i,edges)) == nedges
              ? concat([i],  select_nedged_points(points,edges,nedges,i+1))
              : select_nedged_points(points,edges,nedges,i+1)
@@ -350,7 +349,7 @@ function face_areas(faces,points,i=0) =
       ? concat([[i,  face_area(as_points(faces[i],points))]] ,
                face_areas(faces,points,i+1))
       : [] ;
- 
+
 function max_area(areas, max=[-1,-1], i=0) =
    i <len(areas)
       ? areas[i][1] > max[1]
@@ -369,7 +368,7 @@ function bbox(v) = [
 function cosine_between(u, v) =(u * v) / (norm(u) * norm(v));
 
 function lhs_faces(faces,points,i=0) =
-     i < len(faces) 
+     i < len(faces)
         ?  cosine_between(normal(as_points(faces[i],points)),
                          centre(as_points(faces[i],points))) < 0
             ?  concat([reverse(faces[i])],lhs_faces(faces,points,i+1))
@@ -402,66 +401,69 @@ function select_large_faces(faces,points, min,i=0) =
   i < len(faces)
      ?  face_area(as_points(faces[i],points)) > min
        ? concat([faces[i]],  select_large_faces(faces,points,min,i+1))
-       :select_large_faces(faces,points,min,i+1)     
+       :select_large_faces(faces,points,min,i+1)
      : [];
-        
+
 function lower(char) =
     contains(char,"abcdefghijklmnopqrstuvwxyz") ;
 
 function char_layer(char) =
-    lower(char) 
+    lower(char)
          ? str(char,"_")
          : char;
 
 module write_char(font,char) {
-	linear_extrude(height=1,convexity=10) 
+	linear_extrude(height=1,convexity=10)
       import(file=str("write/",font,".dxf"),layer=char_layer(char));
-};
+}
 
 module write_centred_char(font,char) {
-	linear_extrude(height=1,convexity=10) 
+	linear_extrude(height=1,convexity=10)
       translate([-2.5,-4,0])
           import(file=str("write/",font,".dxf"),layer=char_layer(char));
-};
-module engrave_face_word(faces,points,word,font,ratio,thickness) {
-    for (i=[0:len(faces) - 1]) 
-      if (i <len(word))
-        assign (f = as_points(faces[i],points)) 
-        assign (n = normal(f), c = centre(f))
-        assign(s = longest_edge(f) / 20* ratio)
-           orient_to(c,n)  
-                translate([0,0,-thickness+eps])
-                     scale([s,s,thickness])
-                          write_centred_char(font,word[i]);
-}
-                          
-module orient_to(centre, normal) {   
-      translate(centre)
-      rotate([0, 0, atan2(normal[1], normal[0])]) //rotation
-      rotate([0, atan2(sqrt(pow(normal[0], 2)+pow(normal[1], 2)),normal[2]), 0])
-      children();
 }
 
-module orient_from(centre, normal) {   
-      rotate([0, -atan2(sqrt(pow(normal[0], 2)+pow(normal[1], 2)),normal[2]), 0])
-      rotate([0, 0, -atan2(normal[1], normal[0])]) //rotation
-      translate(-centre)
-      children();
+module engrave_face_word(faces,points,word,font,ratio,thickness) {
+    for (i=[0:len(faces) - 1]) {
+      if (i <len(word)) {
+        f = as_points(faces[i], points);
+        n = normal(f); c = centre(f);
+        s = longest_edge(f) / 20* ratio;
+          orient_to(c,n)
+            translate([0,0,-thickness+eps])
+              scale([s,s,thickness])
+                write_centred_char(font,word[i]);
+      }
+    }
+}
+
+module orient_to(centre, normal) {
+    translate(centre)
+    rotate([0, 0, atan2(normal[1], normal[0])]) //rotation
+    rotate([0, atan2(sqrt(pow(normal[0], 2)+pow(normal[1], 2)),normal[2]), 0])
+    children();
+}
+
+module orient_from(centre, normal) {
+    rotate([0, -atan2(sqrt(pow(normal[0], 2)+pow(normal[1], 2)),normal[2]), 0])
+    rotate([0, 0, -atan2(normal[1], normal[0])]) //rotation
+    translate(-centre)
+    children();
 }
 
 module place_on_largest_face(faces,points) {
-  assign (largest = max_area(face_areas(faces,points)))
-  assign (lpoints = as_points(faces[largest[0]],points))
-  assign (n = normal(lpoints),c = centre(lpoints))
-  orient_from(c,-n)
-  children();
+    largest = max_area(face_areas(faces,points));
+    lpoints = as_points(faces[largest[0]],points);
+    n = normal(lpoints); c = centre(lpoints);
+    orient_from(c,-n)
+    children();
 }
-              
+
 module make_edge(edge, points, r) {
-    assign(p0 = points[edge[0]], p1 = points[edge[1]])
-    assign(v = p1 -p0 )
+    p0 = points[edge[0]]; p1 = points[edge[1]];
+    v = p1 - p0;
      orient_to(p0,v)
-       cylinder(r=r, h=norm(v)); 
+       cylinder(r=r, h=norm(v));
 }
 
 module make_edges(points, edges, r) {
@@ -469,51 +471,54 @@ module make_edges(points, edges, r) {
       make_edge(edges[i],points, r);
 }
 
-module make_vertices(points,r) { 
+module make_vertices(points,r) {
    for (i = [0:len(points)-1])
-      translate(points[i]) sphere(r); 
+      translate(points[i]) sphere(r);
 }
 
 module face_prism (face,prism_base_ratio,prism_scale,prism_height_ratio) {
-    assign (n = normal(face), c= centre(face))
-    assign (m = matrix_from(c,n))
-    assign (tpts =  prism_base_ratio * transform_points(face,m))
-    assign (max_length = longest_edge(face))
-    assign (xy = project(tpts)) 
-      linear_extrude(height=prism_height_ratio * max_length, scale=prism_scale) 
+    n = normal(face); c= centre(face);
+    m = matrix_from(c,n);
+    tpts =  prism_base_ratio * transform_points(face,m);
+    max_length = longest_edge(face);
+    xy = project(tpts);
+      linear_extrude(height=prism_height_ratio * max_length, scale=prism_scale)
           polygon(points=xy);
 }
 
 module face_prisms_in(faces,points,prism_base_ratio,prism_scale,prism_height_ratio) {
-    for (i=[0:len(faces) - 1]) 
-       assign (f = as_points(faces[i],points)) 
-       assign (n = normal(f), c = centre(f))
-       orient_to(c,n) 
-          translate([0,0,eps]) 
-               mirror() rotate([0,180,0]) 
+    for (i=[0:len(faces) - 1]) {
+       f = as_points(faces[i],points);
+       n = normal(f); c = centre(f);
+       orient_to(c,n)
+          translate([0,0,eps])
+               mirror() rotate([0,180,0])
                    face_prism(f,prism_base_ratio,prism_scale,prism_height_ratio);
+    }
 }
 
 module face_prisms_out(faces,points,prism_base_ratio,prism_scale,prism_height_ratio) {
-    for (i=[0:len(faces) - 1]) 
-       assign (f = as_points(faces[i],points)) 
-       assign (n = normal(f), c = centre(f))
-       orient_to(c,n) 
-          translate([0,0,-eps]) 
+    for (i=[0:len(faces) - 1]) {
+       f = as_points(faces[i],points);
+       n = normal(f); c = centre(f);
+       orient_to(c,n)
+          translate([0,0,-eps])
                face_prism(f,prism_base_ratio,prism_scale,prism_height_ratio);
+    }
 }
 
 module face_prisms_through(faces,points,prism_base_ratio,prism_scale,prism_height_ratio) {
-    for (i=[0:len(faces) - 1]) 
-       assign (f = as_points(faces[i],points)) 
-       assign (n = normal(f), c = centre(f))
-       orient_to(c,n) 
-          translate([0,0,prism_height_ratio*longest_edge(f)/2]) 
-               mirror() rotate([0,180,0]) 
+    for (i=[0:len(faces) - 1]) {
+       f = as_points(faces[i],points);
+       n = normal(f); c = centre(f);
+       orient_to(c,n)
+          translate([0,0,prism_height_ratio*longest_edge(f)/2])
+               mirror() rotate([0,180,0])
                    face_prism(f,prism_base_ratio,prism_scale,prism_height_ratio);
+    }
 }
 module ruler(n) {
-   for (i=[0:n-1]) 
+   for (i=[0:n-1])
        translate([(i-n/2 +0.5)* 10,0,0]) cube([9.8,5,2], center=true);
 }
 
