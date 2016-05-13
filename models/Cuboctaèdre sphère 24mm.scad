@@ -1,6 +1,9 @@
 arete = 12;
 paroi = 1.5;
 diametreTrouBouchon = 1.5;
+bottomHole = 1;
+bottomHoleDiameter = 1.1;
+
 echelleReductionAjustementBouchon = 0.94;
 r = 0.19; // résolution d'impression sur l'axe Z
 Cpi = 3.14159;
@@ -29,6 +32,10 @@ module corps_ouvert() {
 	difference() {
 		forme_creuse();
 		decoupe_bouchon();
+    if (bottomHole) {
+      translate([0, 0, -externalRadius+1])
+      #cylinder(paroi*3, r=bottomHoleDiameter/2, $fn=22);
+    }
 	}
 }
 
