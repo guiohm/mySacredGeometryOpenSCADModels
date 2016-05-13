@@ -1,8 +1,14 @@
 arete = 12;
 paroi = 1.5;
 diametreTrouBouchon = 1.5;
-bottomHole = 1;
+bottomHole = 0;
 bottomHoleDiameter = 1.1;
+vertexHole = 1;
+vertexHolesDiameter = 1;
+sideHole = 0;
+sideHolesDiameter = 1;
+
+dihedralAngle = 125.264;
 
 echelleReductionAjustementBouchon = 0.94;
 r = 0.19; // résolution d'impression sur l'axe Z
@@ -22,19 +28,32 @@ internalRadius = arete_from(int_radius(arete)-paroi);
 
 echo(internalRadius);
 
+render(convexity=2)
 //forme_creuse();
 //decoupe_bouchon();
 corps_ouvert();
-// bouchon();
+bouchon();
 //trou();
 
 module corps_ouvert() {
+  // rotation pour face triangle
+  // rotate([180 - dihedralAngle, 0, 0])
+  // rotate([0, 0, 45])
   difference() {
     forme_creuse();
     decoupe_bouchon();
     if (bottomHole) {
       translate([0, 0, -externalRadius+1])
       #cylinder(paroi*3, r=bottomHoleDiameter/2, $fn=22);
+    }
+    if (sideHole) {
+      rotate([0, 0, 45])
+      rotate([180 - dihedralAngle, 0, 0])
+      translate([0, 0, externalRadius*.6])
+      #cylinder(paroi*3, r=bottomHoleDiameter/2, $fn=22);
+    }
+    if (vertexHole) {
+      trou_pointe();
     }
   }
 }
@@ -47,7 +66,11 @@ module bouchon() {
         forme_creuse();
         decoupe_bouchon(echelleReductionAjustementBouchon);
     }
-    trou();
+    if (vertexHole) {
+      trou_pointe();
+    } else {
+      trou();
+    }
   }
 }
 
@@ -55,6 +78,12 @@ module trou() {
     rotate([0, 0, 0])
     translate([0, 0, externalRadius*0.5])
     cylinder(30, r=diametreTrouBouchon/2, $fn=22);
+}
+
+module trou_pointe() {
+    rotate([45, 0, 0])
+    translate([0, 0, externalRadius*.7])
+    #cylinder(paroi*3, r=bottomHoleDiameter/2, $fn=22);
 }
 
 module forme_creuse() {
