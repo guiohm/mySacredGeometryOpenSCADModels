@@ -2,10 +2,12 @@ arete = 12.356;
 creux = 1; // creux ou plein || 1 ou 0
 paroi = 1.5;
 echelleReductionAjustementBouchon = 0.972;
-bouchon = 0; // 1 ou 0
+bouchon = 1; // 1 ou 0
 corps = 0; // 1 ou 0
-support = 1;
-sideHole = 1;
+support = 0;
+bouchonHole = 1;
+bouchonHoleDiameter = 1;
+sideHole = 0;
 sideHoleDiameter = 1;
 
 use <../lib/maths.scad>;
@@ -130,8 +132,20 @@ module bouchon() {
             union() {
                 poly_creux();
                 supplement_feuillure_bouchon();
+                if (bouchonHole) {
+                    intersection() {
+                        small_stellated_dodecahedron(spike[forme_ID], arete);
+                        translate([0,0, circumRadius*3]) rotate([0,90])
+                            cylinder(h=30, r=bouchonHoleDiameter+0.7, center=true, $fn=20);
+                    }
+            }
             }
             decoupe_bouchon(echelleReductionAjustementBouchon);
+
+        }
+        if (bouchonHole) {
+            translate([0,0, circumRadius*3.1]) rotate([0,90])
+                cylinder(h=30, r=bouchonHoleDiameter, center=true, $fn=16);
         }
 	}
 }
