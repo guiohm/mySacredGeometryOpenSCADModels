@@ -8,7 +8,7 @@ include <Dodecaedre_base.scad>;
 
 r = 0.19; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.35; //1.19
-bottom_hole = 1; // on || off
+bottom_hole = 0; // on || off
 bottom_hole_diameter = 1.1;
 bouchon_hole = 0; // on || off
 side_hole = 0; // on || off
@@ -20,7 +20,7 @@ bouchonOffset = 0.4;
 
 // Permet meilleur encastrement du bouchon pour ne pas qu'il
 // dépasse après collage
-decoupeZOffset = -r;
+decoupeZOffset = 0;
 
 corps_ouvert();
-bouchon();
+// bouchon();
