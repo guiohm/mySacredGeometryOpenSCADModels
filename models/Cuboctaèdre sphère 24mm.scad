@@ -2,11 +2,11 @@ arete = 12;
 paroi = 1.5;
 diametreTrouBouchon = 1.5;
 bottomHole = 0;
-bottomHoleDiameter = 1.1;
-vertexHole = 1;
+bottomHoleDiameter = 1.2;
+vertexHole = 0;
 vertexHolesDiameter = 1;
-sideHole = 0;
-sideHolesDiameter = 1;
+sideHole = 1;
+sideHolesDiameter = 1.1;
 
 dihedralAngle = 125.264;
 
@@ -32,7 +32,7 @@ render(convexity=2)
 //forme_creuse();
 //decoupe_bouchon();
 corps_ouvert();
-bouchon();
+// bouchon();
 //trou();
 
 module corps_ouvert() {
