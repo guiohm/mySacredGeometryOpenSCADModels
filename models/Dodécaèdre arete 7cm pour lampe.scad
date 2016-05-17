@@ -8,11 +8,13 @@ hauteurInt = hauteurExt - 2 * epaisseurParoi;
 use <../lib/maths.scad>;
 
 // color("white")
-// corps_ouvert();
+corps_ouvert();
 // color("black")
 // piedE27();
 // render(convexity=2)
-piedE27_grande_ampoule();
+// piedE27_grande_ampoule_1();
+piedE27_grande_ampoule_2();
+base_pied();
 //piedE14();
 
 
@@ -43,8 +45,11 @@ module corps_ouvert() {
 module piedE27() {
     pied(diamTrou=42);
 }
-module piedE27_grande_ampoule() {
-    pied_grande_ampoule(diamTrou=42);
+module piedE27_grande_ampoule_1() {
+    pied_grande_ampoule_1(diamTrou=42);
+}
+module piedE27_grande_ampoule_2() {
+    pied_grande_ampoule_2(diamTrou=42);
 }
 module piedE14() {
     pied(diamTrou=30);
@@ -77,7 +82,7 @@ module pied(diamTrou) {
     }
 }
 
-module pied_grande_ampoule(diamTrou) {
+module pied_grande_ampoule_1(diamTrou) {
     difference() {
         union() {
             pentagone_feuillure();
@@ -131,6 +136,96 @@ module pied_grande_ampoule(diamTrou) {
         // Passe fil
         translate([0,0,distance+50+75]) rotate([0,90,18])
             cylinder(120, r=3.5, $fn=20);
+    }
+}
+
+module pied_grande_ampoule_2(diamTrou) {
+    difference() {
+        union() {
+            pentagone_feuillure();
+
+            // partie haute
+            rotate([0,0,0]) translate([0, 0, distance+35+25])
+                linear_extrude(height = 72+50, twist = 40, scale = 0.44, center = true, slices = 50)
+                    difference() {
+                        offset(r=10, $fn=40) {
+                            circle(d=69, $fn=10, center = true);
+                        }
+                        offset(r=9) {
+                            circle(d=69, $fn=10, center = true);
+                        }
+                    }
+            // partie haute
+            // rotate([0,0,54]) translate([0,0,distance])
+            //     cylinder(75, r=43.5, r2=30, $fn=29);
+
+            // partie basse
+            // rotate([0,0,54]) translate([0, 0, distance + 102])
+            //     linear_extrude(height = 72, twist = 1*72, scale = 0.7, center = true, slices = 200)
+            //         difference() {
+            //             offset(r=10, $fn=80) {
+            //                 circle(d=60*0.7, $fn=10, center = true);
+            //             }
+            //             offset(r=9) {
+            //                 circle(d=60*0.7, $fn=10, center = true);
+            //             }
+            //         }
+            // partie basse
+            // rotate([0,0,54]) translate([0,0,distance+75])
+            //     cylinder(60, r=30, r2=44, $fn=29);
+
+            // plateforme douille
+            translate([0,0, distance + 65]) rotate([0,0,51])
+                cylinder(h=3, d=59, $fn=20);
+
+        }
+        render(convexity=2)
+        union() {
+            translate([0,0,68])
+                trou_douille(diamTrou);
+            // ouverture ampoule
+            trou_douille(84);
+
+            // partie haute
+            // rotate([0,0,54]) translate([0,0,distance])
+            //     cylinder(75, r=42, r2=28.5, $fn=29);
+            // partie basse
+            // rotate([0,0,54]) translate([0,0,distance+75])
+            //     cylinder(60, r=28.5, r2=42.5, $fn=29);
+        }
+        // spirale1(distance);
+        // spirale2(distance);
+        // Passe fil
+        translate([0,0,distance+40+65]) rotate([0,90,18])
+            cylinder(120, r=3.5, $fn=20);
+
+        // coupe en bas
+        render(convexity=2)
+        translate([0, 0, distance + 250 + 65 + 48])
+            cube(size=500, center=true);
+    }
+}
+
+module base_pied() {
+    scale([1.01, 1.01])
+    difference() {
+        // base
+        render(convexity=2)
+        translate([0,0, distance + 65 + 48]) rotate([0,0,54+36])
+            cylinder(h=4, r=hauteurExt/2.618*0.81, $fn=66, center=true);
+
+        // trou
+        render(convexity=2)
+        translate([0,0, distance + 65 + 46]) rotate([0,0,36])
+            cylinder(h=8, d=38, $fn=30, center=true);
+
+
+        // trou decagone
+        render(convexity=2)
+        translate([0,0, distance + 65 + 46]) rotate([0,0,36])
+            cylinder(h=4, d=43, $fn=10, center=true);
+
+        pied_grande_ampoule_2();
     }
 }
 
