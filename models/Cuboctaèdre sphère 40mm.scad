@@ -23,18 +23,22 @@ internalRadius = arete_from(int_radius(arete)-paroi);
 echo(internalRadius=internalRadius);
 
 use <../lib/Cuboctahedron.scad>;
+use <../lib/Engineering_tools.scad>;
+
+dihedralAngle = 125.264;
 
 render(convexity=2)
 //forme_creuse();
 //decoupe_bouchon();
 // corps_ouvert();
-bouchon();
+// bouchon();
 //trou();
+support();
 
 module corps_ouvert() {
   // rotation pour face triangle
-  // rotate([180 - dihedralAngle, 0, 0])
-  // rotate([0, 0, 45])
+  // rotate([180 - dihedralAngle, 0, 0]) rotate([0, 0, 45])
+
   difference() {
     forme_creuse();
     decoupe_bouchon();
@@ -55,7 +59,7 @@ module corps_ouvert() {
 }
 
 module bouchon() {
-  rotate([-90, 45, 0])
+  // rotate([-90, 45, 0])
   scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.99])
   difference () {
     intersection() {
@@ -94,6 +98,21 @@ module decoupe_bouchon(scale=1) {
   d = arete-offset_decoupe_bouchon*2;
   rotate([0,0,45]) translate([0,0, distance])
     cube([d, d, paroi], center=true);
-  // rotate([0,0,0]) translate([0,0, distance-paroi])
-  //   cylinder(paroi, r=(arete-paroi)*0.66, $fn=4, center=true);
+}
+
+module support() {
+  $fn=66;
+  translate([0,0,arete+1-7/2])
+  difference() {
+    translate([0,0,-arete-1])
+    cylinder(h=7, r=9);
+    translate([0,0,-arete-2])
+    cylinder(h=10, r=7);
+    // tube(r=12, thickness=1, height=10, center=false, outline=false)
+    rotate_on_vertex() #corps_ouvert();
+  }
+}
+
+module rotate_on_vertex() {
+    rotate([0, 45, 0]) rotate([0, 0, 0]) children();
 }
