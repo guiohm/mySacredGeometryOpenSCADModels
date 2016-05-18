@@ -1,7 +1,7 @@
 arete = 115.2;
 hauteur = 73.309;
 paroi = 1.5;
-biseau = 1; // booléen
+biseau = 1; // boolean
 echelleReductionAjustementBouchon = 0.99;
 libEcho=false;
 
@@ -42,8 +42,8 @@ module bouchon() {
 
 module forme_creuse() {
     difference() {
-        pyramid(side=arete, height=hauteur, square=true, centerHorizontal=true, centerVertical=true);
-        pyramid(side=areteInterieure, height=hauteurInterieure, square=true, centerHorizontal=true, centerVertical=true);
+        pyramid(side=arete, height=hauteur, square=true, centerHorizontal=true, centerVertical=true, kheops=true);
+        pyramid(side=areteInterieure, height=hauteurInterieure, square=true, centerHorizontal=true, centerVertical=true, kheops=true);
     }
 }
 
@@ -52,7 +52,7 @@ module decoupe_bouchon(scale=1) {
     $fn=4;
     if (biseau) {
         rotate([0,0,45]) translate([0,0, distance])
-            cylinder(paroi, r=arete*0.666, r2=(arete-paroi)*0.624);
+            #cylinder(paroi, r=arete*0.688, r2=(arete-paroi)*0.67);
     } else {
         rotate([0,0,45]) translate([0,0, distance])
             cylinder(paroi, r=arete*0.65, center=true);

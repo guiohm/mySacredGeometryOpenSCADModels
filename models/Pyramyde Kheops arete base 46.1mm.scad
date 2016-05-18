@@ -12,16 +12,15 @@ areteInterieure = hauteurInterieure * arete / hauteur;
 
 echo(areteInterieure);
 
-
 //forme_creuse();
 //decoupe_bouchon();
-// corps_ouvert();
-bouchon();
+corps_ouvert();
+// bouchon();
 
 
 module corps_ouvert() {
     render(convexity=2)
-    rotate([180-51.8, 0, 0])
+    // rotate([180-51.8, 0, 0])
     difference() {
         forme_creuse();
         decoupe_bouchon();
@@ -42,8 +41,8 @@ module bouchon() {
 
 module forme_creuse() {
     difference() {
-        pyramid(side=arete, height=hauteur, square=true, centerHorizontal=true, centerVertical=true);
-        pyramid(side=areteInterieure, height=hauteurInterieure, square=true, centerHorizontal=true, centerVertical=true);
+        pyramid(side=arete, height=hauteur, square=true, centerHorizontal=true, centerVertical=true, kheops=true);
+        pyramid(side=areteInterieure, height=hauteurInterieure, square=true, centerHorizontal=true, centerVertical=true, kheops=true);
     }
 }
 

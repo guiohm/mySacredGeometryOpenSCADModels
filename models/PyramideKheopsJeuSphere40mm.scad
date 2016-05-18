@@ -42,9 +42,9 @@ module bouchon() {
 
 module forme_creuse() {
 	difference() {
-        pyramid(side=arete, height=hauteur, square=true, centerHorizontal=true, centerVertical=true);
-        pyramid(side=areteInterieure, height=hauteurInterieure, square=true, centerHorizontal=true, centerVertical=true);
-	}
+        pyramid(side=arete, height=hauteur, square=true, centerHorizontal=true, centerVertical=true, kheops=true);
+        pyramid(side=areteInterieure, height=hauteurInterieure, square=true, centerHorizontal=true, centerVertical=true, kheops=true);
+    }
 }
 
 module decoupe_bouchon(scale=1) {
