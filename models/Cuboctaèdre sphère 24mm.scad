@@ -1,14 +1,20 @@
+version = 4;
 arete = 12;
-paroi = 1.5;
+paroi = 1.2;
+trou_bouchon = 0;
 diametreTrouBouchon = 1.5;
 bottomHole = 0;
 bottomHoleDiameter = 1.2;
-vertexHole = 0;
+vertexHole = 1;
 vertexHolesDiameter = 1;
-sideHole = 1;
-sideHolesDiameter = 1.1;
+sideHole = 0;
+sideHolesDiameter = 1.2;
 
 dihedralAngle = 125.264;
+
+// distance entre la paroi extérieure et la découpe
+// minimum semble etre >nozzle_diameter pour Zortrax M200
+offset_decoupe_bouchon = 0.42;
 
 echelleReductionAjustementBouchon = 0.94;
 r = 0.19; // résolution d'impression sur l'axe Z
@@ -59,16 +65,16 @@ module corps_ouvert() {
 }
 
 module bouchon() {
-  // rotate([180, 0, 0])
+  rotate([-90, 45, 0])
   scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.98])
   difference () {
     intersection() {
-        forme_creuse();
+        // forme_creuse();
         decoupe_bouchon(echelleReductionAjustementBouchon);
     }
     if (vertexHole) {
       trou_pointe();
-    } else {
+    } else if (trou_bouchon) {
       trou();
     }
   }
@@ -81,7 +87,7 @@ module trou() {
 }
 
 module trou_pointe() {
-    rotate([45, 0, 0])
+    rotate([90, 0, 45])
     translate([0, 0, externalRadius*.7])
     #cylinder(paroi*3, r=bottomHoleDiameter/2, $fn=22);
 }
@@ -94,11 +100,12 @@ module forme_creuse() {
 }
 
 module decoupe_bouchon(scale=1) {
-  distance = int_radius(arete);
-  rotate([0,0,0]) translate([0,0, distance])
-    cylinder(paroi, r=arete*0.65, $fn=4, center=true);
-  rotate([0,0,0]) translate([0,0, distance-paroi])
-    cylinder(paroi, r=(arete-paroi)*0.66, $fn=4, center=true);
+  distance = int_radius(arete)-paroi/2;
+  d = arete-offset_decoupe_bouchon;
+  rotate([0,0,45]) translate([0,0, distance])
+    cube([d, d, paroi], center=true);
+  // rotate([0,0,0]) translate([0,0, distance-paroi])
+  //   cylinder(paroi, r=(arete-paroi)*0.66, $fn=4, center=true);
 }
 
 
