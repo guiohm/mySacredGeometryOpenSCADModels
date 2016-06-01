@@ -2,27 +2,28 @@ arete = 14.274;
 creux = 1; // creux ou plein || 1 ou 0
 paroi = 1.5;
 echelleReductionAjustementBouchon = 0.97;
-bouchon = 1; // 1 ou 0
-corps = 1; // 1 ou 0
+bouchon = 0; // 1 ou 0
+corps = 0; // 1 ou 0
+support = 1;
 
 r = 0.19; // résolution d'impression sur l'axe Z
 ico_sch = [3,5];
 
-function ico_ext_radius(a) = 
+function ico_ext_radius(a) =
     a*1/4*(sqrt(10+2*sqrt(5)));
-    
-function ico_int_radius(a) = 
+
+function ico_int_radius(a) =
     a/12*(3*sqrt(3)+sqrt(15));
-    
-function ico_arete_from(int_radius) = 
+
+function ico_arete_from(int_radius) =
     int_radius*12/(3*sqrt(3)+sqrt(15));
-    
+
 externalRadius = ico_ext_radius(arete);
-internalRadius = ico_ext_radius( 
+internalRadius = ico_ext_radius(
                     ico_arete_from(
                         ico_int_radius(arete)-paroi));
-                        
-echo("externalRadius:", externalRadius); 
+
+echo("externalRadius:", externalRadius);
 echo("externalRadius:", internalRadius);
 
 /* Forme
@@ -36,7 +37,7 @@ Choix parmi:
 - 6 => étoilé
 - 7 => tous les sommets sur un dodécaèdre
 - 8 => Ico
-- 9 => 
+- 9 =>
 */
 forme_ID = 1;
 
@@ -62,12 +63,15 @@ if (forme_ID == 0) {
     if (creux == 0) {
         icosaedre_augmented(arete, spike[forme_ID-1]);
     } else {
-        if (corps == 1) {
+        if (corps) {
             corps_ouvert();
             support_base();
         }
-        if (bouchon == 1) {
+        if (bouchon) {
             bouchon();
+        }
+        if (support) {
+            bague_support();
         }
     }
 }
@@ -75,6 +79,13 @@ if (forme_ID == 0) {
 
 //		poly_creux();
 //		decoupe_bouchon();
+
+module bague_support() {
+    difference() {
+        rotate_pointe()
+        icosaedre_augmented(externalRadius, spike[forme_ID-1]);
+    }
+}
 
 module corps_ouvert() {
     rotate([0,180,0])
@@ -85,6 +96,7 @@ module corps_ouvert() {
 }
 
 module poly_creux() {
+    rotate_sur_5_pointes()
     difference() {
         icosaedre_augmented(externalRadius, spike[forme_ID-1]);
         icosaedre_augmented(internalRadius, spike[forme_ID-1]);
@@ -103,7 +115,7 @@ module decoupe_bouchon(scale=1) {
 module supplement_feuillure_bouchon(scale=1) {
     distance = ico_int_radius(arete)*0.5625;
     rotate([0,0,54]) translate([0,0, distance-paroi-1])
-    difference() {   
+    difference() {
 		cylinder(paroi+1, r=(arete-paroi)*0.9*scale, $fn=5, center=false);
 		cylinder(paroi+1, r=(arete-2*paroi)*0.9*scale, $fn=5, center=false);
     }
@@ -126,7 +138,7 @@ module support_base() {
     difference() {
         for (i = [1:5]) {
             rotate([0,0,360/5*i])
-            translate([0,arete*1.08, -internalRadius*0.9]) rotate([0,-8.8,90]) 
+            translate([0,arete*1.08, -internalRadius*0.9]) rotate([0,-8.8,90])
             cylinder(5, r=arete*0.6, $fn=3, center=false);
         }
         translate([0,0,-internalRadius*1.51]) cylinder(internalRadius, r=999, $fn=6, center=false);
@@ -172,6 +184,15 @@ module Pentakis(a) {
     icosaedre_augmented(a, 0.4279);
 }
 
+module rotate_sur_5_pointes() {
+    rotate([31.72, 0, 0]) children();
+}
+
+module rotate_pointe() {
+    rotate([0, 20.905, 0]) children();
+}
+
+
 module icosaedre_augmented(rad=20, amount)
 {
     //rad = Cphi;
@@ -179,11 +200,11 @@ module icosaedre_augmented(rad=20, amount)
     s = rad/amount;
 //    s = rad/Cpi/3; // inverted
     echo("drawing with arete=", arete);
-    
-    
+
+
 	// Convert spherical to cartesian
 	function sph_to_cart(c, rad) = [
-		rad*sin(atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]))*cos(atan2(c[1],c[0])),  
+		rad*sin(atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]))*cos(atan2(c[1],c[0])),
 		rad*sin(atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]))*sin(atan2(c[1],c[0])),
 		rad*cos(atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]))
 		];
@@ -198,17 +219,17 @@ module icosaedre_augmented(rad=20, amount)
 	// (+-1, +-Cphi, 0)
 
 	function icosa_unit(rad) = [
-		sph_to_cart([0, +1, +Cphi], rad), 
+		sph_to_cart([0, +1, +Cphi], rad),
 		sph_to_cart([0, +1, -Cphi], rad),
 		sph_to_cart([0, -1, -Cphi], rad),
 		sph_to_cart([0, -1, +Cphi], rad),
-		sph_to_cart([+Cphi, 0, +1], rad), 
-		sph_to_cart([+Cphi, 0, -1], rad), 
+		sph_to_cart([+Cphi, 0, +1], rad),
+		sph_to_cart([+Cphi, 0, -1], rad),
 		sph_to_cart([-Cphi, 0, -1], rad),
 		sph_to_cart([-Cphi, 0, +1], rad),
 		sph_to_cart([+1, +Cphi, 0], rad),
-		sph_to_cart([+1, -Cphi, 0], rad), 
-		sph_to_cart([-1, -Cphi, 0], rad), 
+		sph_to_cart([+1, -Cphi, 0], rad),
+		sph_to_cart([-1, -Cphi, 0], rad),
 		sph_to_cart([-1, +Cphi, 0], rad),
         [  1.00000*s,  1.00000*s,  1.00000*s],
         [  1.00000*s,  1.00000*s, -1.00000*s],
@@ -232,7 +253,7 @@ module icosaedre_augmented(rad=20, amount)
         [  0.00000*s, -1.61803*s, -0.61803*s],
 		];
 
-	icosa_faces = [ 
+	icosa_faces = [
 		[3,0,20],[3,20,4],[4,20,0],
 		[3,4,14],[3,14,9],[9,14,4],
 		[3,9,30],[3,30,10],[10,30,9],
@@ -254,16 +275,10 @@ module icosaedre_augmented(rad=20, amount)
 		[5,1,21],[5,21,2],[2,21,1],
 		[2,1,23],[2,23,6],[6,23,1],
 		];
-        
-    
+
+
     //a=scale*0.61803;
     //b=scale*0.38197;
-
-    // Posé sur 5 pointes
-    rotate([31.72, 0, 0])
-
-    // Posé sur 1 pointe
-//    rotate([0, 20.905, 0])
 
 	polyhedron(icosa_unit(rad), faces = icosa_faces);
 
