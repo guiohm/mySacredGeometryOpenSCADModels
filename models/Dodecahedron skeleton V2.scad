@@ -86,6 +86,7 @@ decoupe_bouchon_radius = polygon_circumradius_from_apothem(
 bouchon_radius = polygon_circumradius_from_apothem(
               polygon_apothem(arete, 5) - offset_decoupe_bouchon - bouchonOffset,
               5);
+decoupe_feuillure_radius = decoupe_bouchon_radius + 0.6;
 
 echo(arete=arete);
 echo(diameter=diameter);
@@ -99,34 +100,35 @@ module corps_ouvert() {
     union() {
       dode_creux();
       // render(convexity=2)
-      feuillure(decoupe_bouchon_radius);
+      feuillure_add(decoupe_feuillure_radius);
       rotate([180])
-      feuillure(decoupe_bouchon_radius);
+      feuillure_add(decoupe_feuillure_radius);
       for (i=[0:4]) {
         rotate([0,0,i*360/5])
         rotate([180+dihedral_angle]) rotate([0,0,36])
-        feuillure(decoupe_bouchon_radius);
+        feuillure_add(decoupe_feuillure_radius);
       }
       for (i=[0:4]) {
         rotate([0,0,i*360/5])
         rotate([dihedral_angle]) rotate([0,0,36])
-        feuillure(decoupe_bouchon_radius);
+        feuillure_add(decoupe_feuillure_radius);
       }
     }
-    decoupe_bouchon(decoupe_bouchon_radius, decoupeZOffset);
+    decoupe_feuillure_bouchon();
     rotate([180])
-    decoupe_bouchon(decoupe_bouchon_radius, decoupeZOffset);
+      decoupe_feuillure_bouchon();
     for (i=[0:4]) {
       rotate([0,0,i*360/5])
       rotate([180+dihedral_angle]) rotate([0,0,36])
-      decoupe_bouchon(decoupe_bouchon_radius, decoupeZOffset);
+      decoupe_feuillure_bouchon();
     }
     for (i=[0:4]) {
       rotate([0,0,i*360/5])
       rotate([dihedral_angle]) rotate([0,0,36])
-      decoupe_bouchon(decoupe_bouchon_radius, decoupeZOffset);
+      decoupe_feuillure_bouchon();
     }
-
+    //decoupe haut
+    translate([0,0,hauteurInt/2-2.3]) cylinder(r=100, h=10, center=false);
   }
 }
 
@@ -181,14 +183,21 @@ module decoupe_bouchon(radius, zOffset = 0) {
     cylinder(epaisseurParoi+1, r=radius, $fn=5);
 }
 
-module feuillure(radius) {
+module feuillure_add(radius) {
   distance = hauteurInt/2-.8*epaisseurParoi;
-  difference() {
     rotate([0,0,54]) translate([0,0,distance])
       cylinder(.8*epaisseurParoi, r=radius+.5*epaisseurParoi, $fn=5);
+}
+
+module feuillure_substract(radius) {
+  distance = hauteurInt/2-.805*epaisseurParoi;
     rotate([0,0,54]) translate([0,0,distance])
-      cylinder(.8*epaisseurParoi, r1=radius+.5*epaisseurParoi, r2=radius-1.2*epaisseurParoi, $fn=5);
-  }
+      #cylinder(.81*epaisseurParoi, r1=radius+.0*epaisseurParoi, r2=radius-1.8*epaisseurParoi, $fn=5);
+}
+
+module decoupe_feuillure_bouchon() {
+  decoupe_bouchon(decoupe_bouchon_radius, decoupeZOffset);
+  feuillure_substract(decoupe_feuillure_radius);
 }
 
 module dodecahedron(height) {
