@@ -40,11 +40,20 @@ module rotate_on_vertex() {
 module support() {
     $fn=90;
     difference() {
-        translate([0,0,-circumradius*0.885])
-        cylinder(circumradius*0.27, r=circumradius*0.4, center=true);
-        translate([0,0,-circumradius*0.9])
-        cylinder(circumradius, r=circumradius*0.4-2, center=true);
-        rotate_on_vertex() octahedron(circumRadius);
+        translate([0,0,-circumRadius*0.81])
+            cylinder(circumRadius*0.42, r=circumRadius*0.4, center=true);
+        translate([0,0,-circumRadius*0.9])
+            cylinder(circumRadius, r=circumRadius*0.4-2, center=true);
+
+        rotate_on_vertex() #octahedron(circumRadius);
+        translate([0,0,-2*circumRadius*0.81])
+            rotate_on_vertex() octahedron(circumRadius);
+
+        // holes
+        for (i=[1:4]) {
+            rotate([0, 270, i*360/4+45]) translate([-circumRadius*0.81,0,-10])
+                cylinder(h=20, r=5.7, center=true, $fn=4);
+        }
     }
 }
 
