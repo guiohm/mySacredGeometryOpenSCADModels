@@ -97,9 +97,11 @@ echo(inHeight=inHeight);
 echo(decoupe_bouchon_radius=decoupe_bouchon_radius);
 echo(bouchon_radius=bouchon_radius);
 
+module rotate_on_vertex() {
+  rotate([0, 37.4, 0]) children();
+}
 
 module corps_ouvert() {
-//    rotate([0, 37.4, 0])
   difference() {
     union() {
       ico_creux();
@@ -182,11 +184,13 @@ module feuillure(radius) {
 module support() {
   $fn=90;
   difference() {
-    translate([0,0,-_circumradius*0.885])
-    cylinder(_circumradius*0.27, r=_circumradius*0.4, center=true);
-    translate([0,0,-_circumradius*0.9])
-    cylinder(_circumradius, r=_circumradius*0.4-2, center=true);
-    corps_ouvert();
+    translate([0,0,-circumradius*0.885])
+    cylinder(circumradius*0.27, r=circumradius*0.4, center=true);
+    translate([0,0,-circumradius*0.9])
+    cylinder(circumradius, r=circumradius*0.4-2, center=true);
+    rotate_on_vertex() #icosahedron(circumradius);
+    translate([0,0,  - 2*circumradius*.885])
+      rotate_on_vertex() icosahedron(circumradius);
   }
 }
 
