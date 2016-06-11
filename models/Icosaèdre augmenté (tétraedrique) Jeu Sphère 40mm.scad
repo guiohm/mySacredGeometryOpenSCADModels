@@ -9,6 +9,8 @@ support = 1;
 r = 0.19; // résolution d'impression sur l'axe Z
 ico_sch = [3,5];
 
+use <../lib/maths.scad>;
+
 function ico_ext_radius(a) =
     a*1/4*(sqrt(10+2*sqrt(5)));
 
@@ -23,8 +25,8 @@ internalRadius = ico_ext_radius(
                     ico_arete_from(
                         ico_int_radius(arete)-paroi));
 
-echo("externalRadius:", externalRadius);
-echo("externalRadius:", internalRadius);
+echo(externalRadius=externalRadius);
+echo(internalRadius=internalRadius);
 
 /* Forme
 Choix parmi:
@@ -81,9 +83,27 @@ if (forme_ID == 0) {
 //		decoupe_bouchon();
 
 module bague_support() {
+    // render()
     difference() {
+        // translate([0,0,-1.4*externalRadius])
+        //     cylinder(r=8, h=8, center=true);
+        rotate([180]) translate([0, 0, 0.77*externalRadius])
+        parabolic_shell2(11, 0.13, 24, 3, flat_border=true);
+
         rotate_pointe()
-        icosaedre_augmented(externalRadius, spike[forme_ID-1]);
+            #icosaedre_augmented(externalRadius, spike[forme_ID-1]);
+
+        // holes
+        for (i=[1:3]) {
+            // rotate([0, 270, i*360/3+60]) translate([-externalRadius*1.4,0,-10])
+            // cylinder(h=20, r=6, center=true, $fn=3);
+
+            rotate([-90, 0, i*360/3+30]) translate([0,externalRadius*1+7.3,-6])
+            linear_extrude(height=10, center=true, convexity=10, twist=0, scale = 0.4) {
+                translate([0,-10,0])
+                inner_parabola(9.5, 0.11, 18);
+            }
+        }
     }
 }
 
