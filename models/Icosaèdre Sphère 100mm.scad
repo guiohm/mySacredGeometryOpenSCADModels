@@ -25,5 +25,3 @@ corps_ouvert();
 //bouchon();
 //trou();
 //support();
-
-
