@@ -101,7 +101,7 @@ module decoupe_bouchon(scale=1) {
 }
 
 module support() {
-  $fn=66;
+  $fn=88;
   translate([0,0,arete+1-7/2])
   difference() {
     translate([0,0,-arete-1])
