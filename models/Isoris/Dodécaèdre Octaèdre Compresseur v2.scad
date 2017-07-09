@@ -1,173 +1,39 @@
+// Dodécaèdre / Octaèdre compresseur
+
+// changelog
+// V3
+// - Octaedre bouchon droit
+// V2
+// - Dodé jointure au niveau des vertex
+version = 3;
+
 arete = 28.28;
-paroi = 1.5;
-echelleReductionAjustementBouchon = 0.965;
+epaisseurParoi = 1.5;
 r = 0.19; // résolution d'impression sur l'axe Z
-octa_sch = [3,4];
-Cpi = 3.14159;
-Cphi = (1+sqrt(5))/2;
-Cepsilon = 0.00000001;
 
-function octa_ext_radius(a) = 
-    a/2*(sqrt(2));
-    
-function octa_int_radius(a) = 
-    a/6*sqrt(6);
-    
-function octa_arete_from(radius) = 
-    radius*6/sqrt(6);
-    
-externalRadius = octa_ext_radius(arete);
-internalRadius = octa_ext_radius(
-                    octa_arete_from(
-                        octa_int_radius(arete)-paroi));
-                        
-echo(externalRadius);
-echo(internalRadius);
+// distance entre la paroi extérieure et la découpe
+// minimum semble etre >nozzle_diameter pour Zortrax M200
+offset_decoupe_bouchon = 0.42;
+bouchonOffset = 0.6;
 
-rotate([-45, 0, 0])
-rotate([0, -90+plat_dihedral(octa_sch)/2, 0])
-    octahedron(externalRadius);
-//octa_creux();
-//decoupe_bouchon();
-//corps_ouvert();
-//bouchon();
-//trou();
-dode_top();
-dode_bottom();
+// Permet meilleur encastrement du bouchon pour ne pas qu'il
+// dépasse après collage
+decoupeZOffset = -r/2;
 
-module corps_ouvert() {
-	difference() {
-		octa_creux();
-		decoupe_bouchon();
-	}
-}
+include <Octahedron_base.scad>;
 
-module bouchon() {
-//    rotate([180, 0, 0])
-	scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.995])
-	difference () {
-        intersection() {
-            octa_creux();
-            decoupe_bouchon(echelleReductionAjustementBouchon);
-        }
-	}
-}
+// rotate([-45, 0, 0])
+// rotate([0, -90+plat_dihedral(octa_sch)/2, 0])
+//     octahedron(externalRadius);
+// rotate([0, 90-plat_dihedral(octa_sch)/2, 0])
+// rotate([45, 0, 0])
+// octa_creux();
+// decoupe_bouchon();
+// corps_ouvert();
+bouchon();
 
-module octa_creux() {
-	difference() {
-        octahedron(externalRadius);
-        octahedron(internalRadius);
-	}
-}
-
-module decoupe_bouchon(scale=1) {
-    distance = octa_int_radius(arete);
-	rotate([0,0,60]) translate([0,0, distance])
-		cylinder(paroi, r=arete*0.545, $fn=3, center=true);
-	rotate([0,0,60]) translate([0,0, distance-paroi+0.4])
-		cylinder(paroi-0.4, r=(arete-paroi)*0.523, $fn=3, center=true);
-}
-
-
-module octahedron(rad) {
-    // create an instance of a spherical coordinate
-    // long - rotation around z -axis
-    // lat - latitude, starting at 0 == 'north pole'
-    // rad - distance from center
-    function sph(long, lat, rad=1) = [long, lat, rad];
-    
-    // Convert spherical to cartesian
-    function sph_to_cart(s) = [
-	clean(s[2]*sin(s[1])*cos(s[0])),  
-
-	clean(s[2]*sin(s[1])*sin(s[0])),
-
-	clean(s[2]*cos(s[1]))
-	];
-
-    function sphu_from_cart(c, rad=1) = sph(
-        atan2(c[1],c[0]), 
-        atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]), 
-        rad
-        );
-
-    octa_cart = [
-        [+1, 0, 0],  // + x axis
-        [-1, 0, 0],	// - x axis
-        [0, +1, 0],	// + y axis
-        [0, -1, 0],	// - y axis
-        [0, 0, +1],	// + z axis
-        [0, 0, -1] 	// - z axis
-    ];
-
-    function octa_unit(rad=1) = [
-        sph_to_cart(sphu_from_cart(octa_cart[0], rad)), 
-        sph_to_cart(sphu_from_cart(octa_cart[1], rad)),
-        sph_to_cart(sphu_from_cart(octa_cart[2], rad)),
-        sph_to_cart(sphu_from_cart(octa_cart[3], rad)),
-        sph_to_cart(sphu_from_cart(octa_cart[4], rad)), 
-        sph_to_cart(sphu_from_cart(octa_cart[5], rad)), 
-        ];
-
-    octafaces = [
-        [4,2,0],
-        [4,0,3],
-        [4,3,1],
-        [4,1,2],
-        [5,0,2],
-        [5,3,0],
-        [5,1,3],
-        [5,2,1]
-        ];
-
-    octa_edges = [
-        [0,2], 
-        [0,3],
-        [0,4],
-        [0,5],
-        [1,2],
-        [1,3],
-        [1,4],
-        [1,5],
-        [2,4], 
-        [2,5],
-        [3,4],
-        [3,5],
-        ];
-
-    function octahedron(rad=1) = [octa_unit(rad), octafaces, octa_edges];
-
-    rotate([0, 90-plat_dihedral(octa_sch)/2, 0])
-    rotate([45, 0, 0])
-    polyhedron(octa_unit(rad), faces=octafaces);
-}
-//translate([0, 0, -17.7])
-//cylinder(5,40,40);
-
-function clean(n) = (n < 0) ? ((n < -Cepsilon) ? n : 0) : 
-	(n < Cepsilon) ? 0 : n; 
-
-function plat_dihedral(pq) = 2 * asin( cos(180/pq[1])/sin(180/pq[0]));
-
-function plat_circumradius(pq, a) = 
-	(a/2)*
-	tan(Cpi/pq[1])*
-	tan(plat_dihedral(pq)/2);
-
-function plat_midradius(pq, a) = 
-	(a/2)*
-	cos(Cpi/pq[0])*
-	tan(plat_dihedral(pq)/2);
-
-function plat_inradius(pq,a) = 
-	a/(2*tan(Cpi/pq[0]))*
-	sqrt((1-cos(plat_dihedral(pq)))/(1+cos(plat_dihedral(pq))));
-
-function plat_a_from_inradius(pq, inradius) =
-    inradius*(2*tan(Cpi/pq[0]))/
-	sqrt((1-cos(plat_dihedral(pq)))/(1+cos(plat_dihedral(pq))));
-
-
+// dode_top();
+// dode_bottom();
 
 
 // Dodecahedron
@@ -244,7 +110,7 @@ edges = [
 [1,13],
 [8,13],
 [5,13]];
-// --------------------------------- 
+// ---------------------------------
 
 
 // cut holes out of shell
@@ -300,19 +166,19 @@ module assemblage_dode() {
         plafond();
     }
 }
- 
+
 module dode_bottom() {
-    difference() {        
+    difference() {
         assemblage_dode();
         decoupe();
         plots(4.36, 8, 6);
     }
 }
- 
+
 module dode_top() {
 //    rotate([180,0,0])
     difference() {
-        intersection() {        
+        intersection() {
             assemblage_dode();
             union() {
                 decoupe();
@@ -365,7 +231,7 @@ function m_translate(v) = [ [1, 0, 0, 0],
                             [0, 1, 0, 0],
                             [0, 0, 1, 0],
                             [v.x, v.y, v.z, 1  ] ];
-                            
+
 function m_rotate(v) =  [ [1,  0,         0,        0],
                           [0,  cos(v.x),  sin(v.x), 0],
                           [0, -sin(v.x),  cos(v.x), 0],
@@ -378,22 +244,22 @@ function m_rotate(v) =  [ [1,  0,         0,        0],
                           [-sin(v.z),  cos(v.z), 0, 0],
                           [ 0,         0,        1, 0],
                           [ 0,         0,        0, 1] ];
-                            
+
 function vec3(v) = [v.x, v.y, v.z];
 function transform(v, m)  = vec3([v.x, v.y, v.z, 1] * m);
-                            
-function matrix_to(p0, p) = 
-                       m_rotate([0, atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0]) 
-                     * m_rotate([0, 0, atan2(p[1], p[0])]) 
+
+function matrix_to(p0, p) =
+                       m_rotate([0, atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0])
+                     * m_rotate([0, 0, atan2(p[1], p[0])])
                      * m_translate(p0);
 
-function matrix_from(p0, p) = 
+function matrix_from(p0, p) =
                       m_translate(-p0)
-                      * m_rotate([0, 0, -atan2(p[1], p[0])]) 
-                      * m_rotate([0, -atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0]); 
+                      * m_rotate([0, 0, -atan2(p[1], p[0])])
+                      * m_rotate([0, -atan2(sqrt(pow(p[0], 2) + pow(p[1], 2)), p[2]), 0]);
 
-function transform_points(list, matrix, i = 0) = 
-    i < len(list) 
+function transform_points(list, matrix, i = 0) =
+    i < len(list)
        ? concat([ transform(list[i], matrix) ], transform_points(list, matrix, i + 1))
        : [];
 
@@ -401,7 +267,7 @@ function transform_points(list, matrix, i = 0) =
 //  convert from point indexes to point coordinates
 
 function as_points(indexes,points,i=0) =
-     i < len(indexes) 
+     i < len(indexes)
         ?  concat([points[indexes[i]]], as_points(indexes,points,i+1))
         : [];
 
@@ -412,16 +278,16 @@ function normal_r(face) =
 function normal(face) =
      - normal_r(face) / norm(normal_r(face));
 
-function centre(points) = 
+function centre(points) =
       vsum(points) / len(points);
 
 // sum a list of vectors
-function vsum(points,i=0) =  
+function vsum(points,i=0) =
       i < len(points)
         ?  (points[i] + vsum(points,i+1))
         :  [0,0,0];
 
-function ssum(list,i=0) =  
+function ssum(list,i=0) =
       i < len(list)
         ?  (list[i] + ssum(list,i+1))
         :  0;
@@ -434,7 +300,7 @@ function vadd(points,v,i=0) =
         :  [];
 
 function reverse_r(v,n) =
-      n == 0 
+      n == 0
         ? [v[0]]
         : concat([v[n]],reverse_r(v,n-1));
 
@@ -456,39 +322,39 @@ function slice(v,k,i=0) =
       : [];
 
 function max(v, max=-9999999999999999,i=0) =
-     i < len(v) 
-        ?  v[i] > max 
+     i < len(v)
+        ?  v[i] > max
             ?  max(v, v[i], i+1 )
-            :  max(v, max, i+1 ) 
+            :  max(v, max, i+1 )
         : max;
 
 function min(v, min=9999999999999999,i=0) =
-     i < len(v) 
-        ?  v[i] < min 
+     i < len(v)
+        ?  v[i] < min
             ?  min(v, v[i], i+1 )
-            :  min(v, min, i+1 ) 
+            :  min(v, min, i+1 )
         : min;
 
 function project(pts,i=0) =
      i < len(pts)
         ? concat([[pts[i][0],pts[i][1]]], project(pts,i+1))
         : [];
-        
+
 function contains(n, list, i=0) =
-     i < len(list) 
+     i < len(list)
         ?  n == list[i]
            ?  true
            :  contains(n,list,i+1)
         : false;
 
-// normalize the points to have origin at 0,0,0 
-function centre_points(points) = 
+// normalize the points to have origin at 0,0,0
+function centre_points(points) =
      vadd(points, - centre(points));
 
 //scale to average radius = radius
 function normalize(points,radius) =
     points * radius /average_radius(points);
- 
+
 function select_nsided_faces(faces,nsides,i=0) =
   len(nsides) == 0
      ?  faces
@@ -497,7 +363,7 @@ function select_nsided_faces(faces,nsides,i=0) =
              ? concat([faces[i]],  select_nsided_faces(faces,nsides,i+1))
              : select_nsided_faces(faces,nsides,i+1)
          : [];
-         
+
 function longest_edge(face,max=-1,i=0) =
        i < len(face)
           ?  norm(face[i] - face[(i+1)% len(face)]) > max
@@ -506,14 +372,14 @@ function longest_edge(face,max=-1,i=0) =
           : max ;
 
 function point_edges(point,edges,i=0) =
-    i < len(edges) 
+    i < len(edges)
        ? point == edges[i][0] || point == edges[i][1]
          ? concat([edges[i]], point_edges(point,edges,i+1))
          : point_edges(point,edges,i+1)
        : [];
 
 function select_nedged_points(points,edges,nedges,i=0) =
-     i < len(points) 
+     i < len(points)
          ?  len(point_edges(i,edges)) == nedges
              ? concat([i],  select_nedged_points(points,edges,nedges,i+1))
              : select_nedged_points(points,edges,nedges,i+1)
@@ -536,7 +402,7 @@ function face_areas(faces,points,i=0) =
       ? concat([[i,  face_area(as_points(faces[i],points))]] ,
                face_areas(faces,points,i+1))
       : [] ;
- 
+
 function max_area(areas, max=[-1,-1], i=0) =
    i <len(areas)
       ? areas[i][1] > max[1]
@@ -555,7 +421,7 @@ function bbox(v) = [
 function cosine_between(u, v) =(u * v) / (norm(u) * norm(v));
 
 function lhs_faces(faces,points,i=0) =
-     i < len(faces) 
+     i < len(faces)
         ?  cosine_between(normal(as_points(faces[i],points)),
                          centre(as_points(faces[i],points))) < 0
             ?  concat([reverse(faces[i])],lhs_faces(faces,points,i+1))
@@ -588,49 +454,49 @@ function select_large_faces(faces,points, min,i=0) =
   i < len(faces)
      ?  face_area(as_points(faces[i],points)) > min
        ? concat([faces[i]],  select_large_faces(faces,points,min,i+1))
-       :select_large_faces(faces,points,min,i+1)     
+       :select_large_faces(faces,points,min,i+1)
      : [];
-        
+
 function lower(char) =
     contains(char,"abcdefghijklmnopqrstuvwxyz") ;
 
 function char_layer(char) =
-    lower(char) 
+    lower(char)
          ? str(char,"_")
          : char;
 
 module write_char(font,char) {
-	linear_extrude(height=1,convexity=10) 
+	linear_extrude(height=1,convexity=10)
       import(file=str("write/",font,".dxf"),layer=char_layer(char));
 };
 
 module write_centred_char(font,char) {
-	linear_extrude(height=1,convexity=10) 
+	linear_extrude(height=1,convexity=10)
       translate([-2.5,-4,0])
           import(file=str("write/",font,".dxf"),layer=char_layer(char));
 };
 module engrave_face_word(faces,points,word,font,ratio,thickness) {
     for (i=[0:len(faces) - 1]) {
       if (i <len(word)) {
-        f = as_points(faces[i],points); 
+        f = as_points(faces[i],points);
         n = normal(f); c = centre(f);
         s = longest_edge(f) / 20* ratio;
-           orient_to(c,n)  
+           orient_to(c,n)
                 translate([0,0,-thickness+eps])
                      scale([s,s,thickness])
                           write_centred_char(font,word[i]);
       }
   }
 }
-                          
-module orient_to(centre, normal) {   
+
+module orient_to(centre, normal) {
       translate(centre)
       rotate([0, 0, atan2(normal[1], normal[0])]) //rotation
       rotate([0, atan2(sqrt(pow(normal[0], 2)+pow(normal[1], 2)),normal[2]), 0])
       children();
 }
 
-module orient_from(centre, normal) {   
+module orient_from(centre, normal) {
       rotate([0, -atan2(sqrt(pow(normal[0], 2)+pow(normal[1], 2)),normal[2]), 0])
       rotate([0, 0, -atan2(normal[1], normal[0])]) //rotation
       translate(-centre)
@@ -644,12 +510,12 @@ module place_on_largest_face(faces,points) {
   orient_from(c,-n)
   children();
 }
-              
+
 module make_edge(edge, points, r) {
     p0 = points[edge[0]]; p1 = points[edge[1]];
     v = p1 -p0;
      orient_to(p0,v)
-       cylinder(r=r, h=norm(v)); 
+       cylinder(r=r, h=norm(v));
 }
 
 module make_edges(points, edges, r) {
@@ -657,9 +523,9 @@ module make_edges(points, edges, r) {
       make_edge(edges[i],points, r);
 }
 
-module make_vertices(points,r) { 
+module make_vertices(points,r) {
    for (i = [0:len(points)-1])
-      translate(points[i]) sphere(r); 
+      translate(points[i]) sphere(r);
 }
 
 module face_prism (face,prism_base_ratio,prism_scale,prism_height_ratio) {
@@ -668,43 +534,43 @@ module face_prism (face,prism_base_ratio,prism_scale,prism_height_ratio) {
     tpts =  prism_base_ratio * transform_points(face,m);
     max_length = longest_edge(face);
     xy = project(tpts);
-      linear_extrude(height=prism_height_ratio * max_length, scale=prism_scale) 
+      linear_extrude(height=prism_height_ratio * max_length, scale=prism_scale)
           polygon(points=xy);
 }
 
 module face_prisms_in(faces,points,prism_base_ratio,prism_scale,prism_height_ratio) {
     for (i=[0:len(faces) - 1]) {
-       f = as_points(faces[i],points); 
+       f = as_points(faces[i],points);
        n = normal(f); c = centre(f);
-       orient_to(c,n) 
-          translate([0,0,eps]) 
-               mirror() rotate([0,180,0]) 
+       orient_to(c,n)
+          translate([0,0,eps])
+               mirror() rotate([0,180,0])
                    face_prism(f,prism_base_ratio,prism_scale,prism_height_ratio);
     }
 }
 
 module face_prisms_out(faces,points,prism_base_ratio,prism_scale,prism_height_ratio) {
     for (i=[0:len(faces) - 1])  {
-       f = as_points(faces[i],points); 
+       f = as_points(faces[i],points);
        n = normal(f); c = centre(f);
-       orient_to(c,n) 
-          translate([0,0,-eps]) 
+       orient_to(c,n)
+          translate([0,0,-eps])
                face_prism(f,prism_base_ratio,prism_scale,prism_height_ratio);
     }
 }
 
 module face_prisms_through(faces,points,prism_base_ratio,prism_scale,prism_height_ratio) {
     for (i=[0:len(faces) - 1]) {
-       f = as_points(faces[i],points); 
+       f = as_points(faces[i],points);
        n = normal(f); c = centre(f);
-       orient_to(c,n) 
-          translate([0,0,prism_height_ratio*longest_edge(f)/2]) 
-               mirror() rotate([0,180,0]) 
+       orient_to(c,n)
+          translate([0,0,prism_height_ratio*longest_edge(f)/2])
+               mirror() rotate([0,180,0])
                    face_prism(f,prism_base_ratio,prism_scale,prism_height_ratio);
     }
 }
 module ruler(n) {
-   for (i=[0:n-1]) 
+   for (i=[0:n-1])
        translate([(i-n/2 +0.5)* 10,0,0]) cube([9.8,5,2], center=true);
 }
 

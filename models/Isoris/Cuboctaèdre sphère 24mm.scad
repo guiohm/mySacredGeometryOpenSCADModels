@@ -27,7 +27,8 @@ use <../lib/Cuboctahedron.scad>;
 render(convexity=2)
 //forme_creuse();
 //decoupe_bouchon();
-corps_ouvert();
+// corps_ouvert();
+rotate([0,0,45])
 bouchon();
 //trou();
 

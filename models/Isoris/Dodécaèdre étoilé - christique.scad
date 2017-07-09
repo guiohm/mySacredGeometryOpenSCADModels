@@ -1,9 +1,9 @@
 arete = 10;
-creux = 0; // creux ou plein || 1 ou 0
+creux = 1; // creux ou plein || 1 ou 0
 paroi = 1.5;
 echelleReductionAjustementBouchon = 0.985;
 bouchon = 0; // 1 ou 0
-corps = 1; // 1 ou 0
+corps = 0; // 1 ou 0
 
 // Controle rotation viewport quand animation en route
 $vpr = [70, 0, $t * 180];
@@ -16,18 +16,20 @@ Choix parmi:
 - 3 => Pentakis // (all points on sphere)
 - 4 => Animate // voir plus bas pour plus d'infos
 */
-forme_ID = 4;
+forme_ID = 2;
 
 /////////
 
-function dodeca_ext_radius(a) = 
+function dodeca_ext_radius(a) =
     a/2*(sqrt(2));
-    
-function dodeca_sphere_inscrite_radius(a) = 
+
+function dodeca_sphere_inscrite_radius(a) =
     a*sqrt(5/8+11/(8*sqrt(5)));
-    
-function dodeca_arete_from_cercle_inscrite(radius) = 
-    radius/sqrt(5/8+11/(8*sqrt(5)));    
+
+function dodeca_arete_from_cercle_inscrite(radius) =
+    radius/sqrt(5/8+11/(8*sqrt(5)));
+
+dihedral_angle = 116.565;
 
 spike = [
     2.3417, // Etoilé, scale 1 is arete = 1.236 mm, diametre = 6.24 mm, arete pyramide = 2 mm
@@ -38,7 +40,7 @@ spike = [
 
 if (forme_ID == 4) {
     Animate();
-} else {  
+} else {
     if (creux == 0) {
         small_stellated_dodecahedron(spike[forme_ID], small_stellated_dodecahedron);
     } else {
@@ -54,6 +56,15 @@ if (forme_ID == 4) {
 
 //		poly_creux();
 //		decoupe_bouchon();
+christique_inverse_porte_cle();
+
+module christique_inverse_porte_cle() {
+    difference() {
+        small_stellated_dodecahedron(spike[forme_ID], small_stellated_dodecahedron);
+        translate([arete,0,0.4*arete]) rotate([0,-54])
+        #cylinder(h=arete, r=1.7, center=false, $fn=20);
+    }
+}
 
 module corps_ouvert() {
 	difference() {
@@ -64,9 +75,9 @@ module corps_ouvert() {
 
 module poly_creux() {
     areteInt = dodeca_arete_from_cercle_inscrite(dodeca_sphere_inscrite_radius(arete)-paroi);
-                         
+
     echo(areteInt);
-    
+
     difference() {
         small_stellated_dodecahedron(arete, spike[forme_ID]);
         small_stellated_dodecahedron(areteInt, spike[forme_ID]);
@@ -84,7 +95,7 @@ module decoupe_bouchon(scale=1) {
 module supplement_feuillure_bouchon() {
     distance = dodeca_sphere_inscrite_radius(arete);
     rotate([0,0,36]) translate([0,0, distance-paroi-1])
-    difference() {   
+    difference() {
 		cylinder(paroi+1, r=(arete-paroi)*0.85, $fn=5, center=false);
 		cylinder(paroi+1, r=(arete-2*paroi)*0.85, $fn=5, center=false);
     }
@@ -146,7 +157,7 @@ module small_stellated_dodecahedron(scale, ar)
 {
 a=scale*0.61803;
 b=scale*0.38197;
-    
+
 length = ar ? ar : arete;
 echo(length);
 // scale(1) => arete 1.236 mm
@@ -156,7 +167,7 @@ scale(length/1.236)
 //rotate([20.91, 0, 0])
 
 // Posé sur 1 pointe
-//rotate([0, 31.72, 0])
+rotate([0, 31.72, 0])
 
 /*
 constructed from 12 pentagonal pyramids placed

@@ -14,6 +14,8 @@
 // You want to uncomment this...
 // include <Dodecaedre_base.scad>;
 
+version = 5;
+
 r = 0.19; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.5;
 bottom_hole = 0; // on || off

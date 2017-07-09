@@ -7,21 +7,21 @@ Cpi = 3.14159;
 Cphi = (1+sqrt(5))/2;
 Cepsilon = 0.00000001;
 
-function tetra_ext_radius(a) = 
+function tetra_ext_radius(a) =
     a/4*sqrt(6);
-    
-function tetra_int_radius(a) = 
+
+function tetra_int_radius(a) =
     a/12*sqrt(6);
-    
-function tetra_arete_from(radius) = 
+
+function tetra_arete_from(radius) =
     radius*12/sqrt(6);
-    
+
 externalRadius = tetra_ext_radius(arete);
-internalRadius = tetra_ext_radius( 
+internalRadius = tetra_ext_radius(
                     tetra_arete_from(
                         tetra_int_radius(arete)-paroi));
-                        
-echo(externalRadius); 
+
+echo(externalRadius);
 echo(internalRadius);
 
 //tetrahedron(arete);
@@ -71,10 +71,10 @@ module tetrahedron(rad) {
     // lat - latitude, starting at 0 == 'north pole'
     // rad - distance from center
     function sph(long, lat, rad=1) = [long, lat, rad];
-    
+
     // Convert spherical to cartesian
     function sph_to_cart(s) = [
-	clean(s[2]*sin(s[1])*cos(s[0])),  
+	clean(s[2]*sin(s[1])*cos(s[0])),
 
 	clean(s[2]*sin(s[1])*sin(s[0])),
 
@@ -82,8 +82,8 @@ module tetrahedron(rad) {
 	];
 
     function sphu_from_cart(c, rad=1) = sph(
-        atan2(c[1],c[0]), 
-        atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]), 
+        atan2(c[1],c[0]),
+        atan2(sqrt(c[0]*c[0]+c[1]*c[1]), c[2]),
         rad
         );
 
@@ -95,7 +95,7 @@ module tetrahedron(rad) {
     ];
 
     function tetra_unit(rad=1) = [
-        sph_to_cart(sphu_from_cart(tetra_cart[0], rad)), 
+        sph_to_cart(sphu_from_cart(tetra_cart[0], rad)),
         sph_to_cart(sphu_from_cart(tetra_cart[1], rad)),
         sph_to_cart(sphu_from_cart(tetra_cart[2], rad)),
         sph_to_cart(sphu_from_cart(tetra_cart[3], rad)),
@@ -112,10 +112,10 @@ module tetrahedron(rad) {
     tetra_edges = [
         [0,1],
         [0,2],
-        [0,3], 
-        [1,2], 
-        [1,3], 
-        [2,3],	
+        [0,3],
+        [1,2],
+        [1,3],
+        [2,3],
         ];
 
     rotate([54.735, 0, 0])
@@ -125,22 +125,22 @@ module tetrahedron(rad) {
 //translate([0, 0, -17.7])
 //cylinder(5,40,40);
 
-function clean(n) = (n < 0) ? ((n < -Cepsilon) ? n : 0) : 
-	(n < Cepsilon) ? 0 : n; 
+function clean(n) = (n < 0) ? ((n < -Cepsilon) ? n : 0) :
+	(n < Cepsilon) ? 0 : n;
 
 function plat_dihedral(pq) = 2 * asin( cos(180/pq[1])/sin(180/pq[0]));
 
-function plat_circumradius(pq, a) = 
+function plat_circumradius(pq, a) =
 	(a/2)*
 	tan(Cpi/pq[1])*
 	tan(plat_dihedral(pq)/2);
 
-function plat_midradius(pq, a) = 
+function plat_midradius(pq, a) =
 	(a/2)*
 	cos(Cpi/pq[0])*
 	tan(plat_dihedral(pq)/2);
 
-function plat_inradius(pq,a) = 
+function plat_inradius(pq,a) =
 	a/(2*tan(Cpi/pq[0]))*
 	sqrt((1-cos(plat_dihedral(pq)))/(1+cos(plat_dihedral(pq))));
 

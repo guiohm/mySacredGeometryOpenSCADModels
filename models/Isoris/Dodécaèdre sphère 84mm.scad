@@ -6,7 +6,7 @@ _diameter = 84;
 
 include <Dodecaedre_base.scad>;
 
-r = 0.19; // résolution d'impression sur l'axe Z
+r = 0.29; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.5; //1.19
 bottom_hole = 0; // on || off
 bottom_hole_diameter = 1.1;
@@ -22,5 +22,5 @@ bouchonOffset = 0.4;
 // dépasse après collage
 decoupeZOffset = -r;
 
-// corps_ouvert();
-bouchon();
+corps_ouvert();
+// bouchon();

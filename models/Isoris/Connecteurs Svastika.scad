@@ -1,12 +1,14 @@
-r = 17.3/2;
+// r = 17.3/2; // Tube electrique d20
+r = 5.4/2; // paille d6
 rTrou = 4;
-rayonCol = 1.5;
-longueurCol= 10.5;
-longueurEmbout = 22;
-$fn=66;
+rayonCol = 0.6; // d20 -> 1.5
+longueurCol= 8; // d20 -> 10.5
+longueurEmbout = 7; // d20 -> 22
+$fn=33;
+roundingRadius = 0.5; // d20 -> 1
 cubeDihedralAngle = 54.7 ;
 
-use <../lib/rounded_primitives.scad>;
+use <../../lib/rounded_primitives.scad>;
 
 // Rotation pour placement sur les 3 embouts
 
@@ -32,7 +34,8 @@ module connector() {
                 }
                 sphere(r+rayonCol);
             }
-            k = conn_right_angle ? -1.66 : -1.55;
+            // k = conn_right_angle ? -1.66 : -1.55; // d20
+            k = conn_right_angle ? -1.66 : -3.4;
             // découpe base
             translate([0, 0, k*longueurEmbout])
                 cylinder(15, 90, 90);
@@ -61,7 +64,7 @@ module embouts_right_angle() {
 module embout() {
     difference() {
         union() {
-            rcylinder(h=longueurEmbout+longueurCol, r1=r, r2=r-0.1, b=1);
+            rcylinder(h=longueurEmbout+longueurCol, r1=r, r2=r-0.1, b=roundingRadius);
             cylinder(longueurCol, r+rayonCol, r+rayonCol);
         }
     }

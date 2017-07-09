@@ -1,6 +1,8 @@
 // To use this file, copy && modify the header section
 // then uncomment the needed parts.
 
+_version = 5;
+
 ////////////////////
 //  HEADER START  //
 ////////////////////
@@ -17,6 +19,8 @@ r = 0.19; // résolution d'impression sur l'axe Z
 epaisseurParoi = 1.5;
 bottom_hole = 1; // on || off
 bottom_hole_diameter = 1.6;
+side_hole = 0;
+side_hole_diameter = 1.5;
 
 // distance entre la paroi extérieure et la découpe
 // minimum. Printer specifics
@@ -29,7 +33,7 @@ bouchonThickness = .6*epaisseurParoi;
 // dépasse après collage
 decoupeZOffset = -r;
 
-// dode_creux();
+// ico_creux();
 // corps_ouvert();
 // bouchon();
 
@@ -37,6 +41,9 @@ decoupeZOffset = -r;
 ////////////////////
 //   HEADER END   //
 ////////////////////
+
+dihedral_angle = 138.19;
+dihedral_angle2 = 20.905;
 
 function ico_circumradius(arete) =
   arete*1/4*(sqrt(10+2*sqrt(5)));
@@ -150,9 +157,9 @@ module ico_creux() {
       cylinder(4*epaisseurParoi, d=bottom_hole_diameter, $fn=22, center=true);
     }
     if (side_hole) {
-      rotate([dihedral_angle,0,0])
-      translate([0, 0, -circumradius/2])
-      cylinder(4*epaisseurParoi, d=side_hole_diameter, $fn=22, center=true);
+      rotate([0, -37.5,0])
+      translate([0, 0, inRadius])
+      #cylinder(4*epaisseurParoi, d=side_hole_diameter, $fn=22, center=true);
     }
   }
 }
@@ -252,5 +259,5 @@ module icosahedron(rad=1) {
     [2,1,6]
     ];
 
-  rotate([0, 20.905, 0]) polyhedron(icosa_unit(rad), faces = icosa_faces);
+  rotate([0, dihedral_angle2, 0]) polyhedron(icosa_unit(rad), faces = icosa_faces);
 }

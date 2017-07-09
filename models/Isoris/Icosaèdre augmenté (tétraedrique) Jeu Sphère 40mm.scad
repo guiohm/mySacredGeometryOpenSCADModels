@@ -3,8 +3,8 @@ creux = 1; // creux ou plein || 1 ou 0
 paroi = 1.5;
 echelleReductionAjustementBouchon = 0.97;
 bouchon = 0; // 1 ou 0
-corps = 0; // 1 ou 0
-support = 1;
+corps = 1; // 1 ou 0
+support = 0;
 
 r = 0.19; // résolution d'impression sur l'axe Z
 ico_sch = [3,5];
@@ -161,7 +161,8 @@ module support_base() {
             translate([0,arete*1.08, -internalRadius*0.9]) rotate([0,-8.8,90])
             cylinder(5, r=arete*0.6, $fn=3, center=false);
         }
-        translate([0,0,-internalRadius*1.51]) cylinder(internalRadius, r=999, $fn=6, center=false);
+        translate([0,0,-internalRadius*1.51])
+            cylinder(internalRadius, r=999, $fn=6, center=false);
     }
 }
 

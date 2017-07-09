@@ -1,88 +1,30 @@
-hauteurExt = 26.224;
-epaisseurParoi = 1.5;
-diametreTrouBouchon = 1.6;
+// Dodécaèdre Sphère 33mm
+
+version = 5;
+
+// Uncomment only one of the 3 next variables.
+// The 2 other will be automagically computed.
+// _arete = 10;
+_diameter = 33;
+// _hauteurExt = 22.2703;
+
+include <Dodecaedre_base.scad>;
+
 r = 0.19; // résolution d'impression sur l'axe Z
-echelleReductionAjustementBouchon = 0.95;
-hauteurInt = hauteurExt - 2 * epaisseurParoi;
+epaisseurParoi = 1.4; //1.19
+bottom_hole = 0; // on || off
+bottom_hole_diameter = 1.2;
+bouchon_hole = 0; // on || off
+side_hole = 0; // on || off
+side_hole_diameter = 1;
 
-render(convexity=2) 
+// distance entre la paroi extérieure et la découpe
+offset_decoupe_bouchon = 0.52;
+bouchonOffset = 0.3;
 
-//dode_creux();
-//decoupe_bouchon();
-corps_ouvert();
-//bouchon_avec_attache();
+// Permet meilleur encastrement du bouchon pour ne pas qu'il
+// dépasse après collage
+decoupeZOffset = 0;
+
+// corps_ouvert();
 bouchon();
-//bouchon_trou();
-
-module corps_ouvert() {
-	difference() {
-		dode_creux();
-		decoupe_bouchon();
-	}
-}
-
-module bouchon_avec_attache() {
-	scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.97])
-	union () {
-		intersection() {
-			dode_creux();
-			decoupe_bouchon();
-		}
-		translate([0, 0, hauteurExt/2])
-		rotate([90, 0, 54])
-		rotate_extrude(convexity = 10, $fn=40)
-		translate([1, 0, 0])
-		circle(r = 0.5, $fn=40);
-	}
-}
-
-module bouchon_trou() {
-	scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 1])
-	difference () {
-		intersection() {
-			dode_creux();
-			decoupe_bouchon();
-		}
-		translate([0, 0, hauteurExt/2.5])
-		cylinder(30, r=diametreTrouBouchon/2, $fn=22);
-	}
-}
-
-module bouchon() {
-//    rotate([0,180,0])
-	scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.97])
-	difference () {
-		intersection() {
-			dode_creux();
-			decoupe_bouchon();
-		}
-	}
-}
-
-module dode_creux() {
-	difference() {
-		dodecahedron(hauteurExt);
-		dodecahedron(hauteurInt);
-	}
-}
-
-module decoupe_bouchon() {
-    distance = hauteurInt/2+4*r;
-	rotate([0,0,54]) translate([0,0,distance])
-		cylinder(epaisseurParoi, r=hauteurExt/2.77, $fn=5);
-	rotate([0,0,54]) translate([0,0,distance-epaisseurParoi])
-		cylinder(epaisseurParoi, r=hauteurExt/2.54-epaisseurParoi, $fn=5);
-}
-
-module dodecahedron(height) {
-	scale([height,height,height]) {
-		intersection() {
-			cube([2,2,1], center = true); 
-			intersection_for(i=[0:4]) { 
-				rotate([0,0,72*i])
-				rotate([116.565,0,0])
-					cube([2,2,1], center = true); 
-			}
-		}
-	}
-}

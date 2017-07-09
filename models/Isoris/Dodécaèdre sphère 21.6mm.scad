@@ -19,5 +19,6 @@ bouchonOffset = 0.3;
 // dépasse après collage
 decoupeZOffset = -r;
 
-corps_ouvert();
-bouchon();
+dodecahedron(hauteurExt);
+// corps_ouvert();
+// bouchon();

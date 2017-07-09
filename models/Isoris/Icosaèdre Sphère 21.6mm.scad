@@ -18,10 +18,10 @@ bouchonOffset = 0.3;
 // dépasse après collage
 decoupeZOffset = -r;
 
-
-//ico_creux();
+icosahedron(circumradius);
+// ico_creux();
 //decoupe_bouchon();
-corps_ouvert();
+// corps_ouvert();
 //bouchon();
 //trou();
 //support();

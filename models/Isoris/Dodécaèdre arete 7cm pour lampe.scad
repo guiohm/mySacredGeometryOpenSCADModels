@@ -1,38 +1,66 @@
+version = 3;
+
 hauteurExt = 155.894;
 epaisseurParoi = 1.2;
+// hauteurExt = 15.894;
+// epaisseurParoi = 0.3;
 diametreTrouBouchon = 1.6;
 r = 0.19; // résolution d'impression sur l'axe Z
 echelleReductionAjustementBouchon = 0.985;
 hauteurInt = hauteurExt - 2 * epaisseurParoi;
 
-use <../lib/maths.scad>;
+use <../../lib/maths.scad>;
 
 // color("white")
-corps_ouvert();
+// #corps_ouvert();
+// dodecahedron(hauteurExt);
 // color("black")
-// piedE27();
+#piedE27();
 // render(convexity=2)
 // piedE27_grande_ampoule_1();
-piedE27_grande_ampoule_2();
-base_pied();
+// piedE27_grande_ampoule_2();
+// base_pied();
 //piedE14();
 
 
 
-
-
-
 // Modif : Ajout pentagone à coller sur les pieds déjà imprimés
-//pentagone();
+pentagone();
+// translate([0,0,8+0.16]) rotate([0,0,180]) rotate([180,0]) pentagone();
+// translate([0,0,8+2*0.16]) pentagone();
+// translate([0,0,16+3*0.16]) rotate([0,0,180]) rotate([180,0]) pentagone();
 module pentagone() {
-  distance = hauteurExt/2;
-  epaisseur = 2;
-  difference() {
-    rotate([0,0,54]) translate([0,0,distance-4*epaisseur])
-      cylinder(4, r=hauteurExt/2.65, $fn=5);
-    rotate([0,0,54]) translate([0,0,distance-4*epaisseur])
-      cylinder(4, r=hauteurExt/2.85, $fn=5);
-  }
+    distance = hauteurExt/2;
+    epaisseur = 2;
+    hauteur = 4;
+    radius = hauteurExt/2.65;
+    // comment next line for multi print
+    translate([0,0,distance-hauteur*epaisseur])
+    difference() {
+        union() {
+            rotate([0,0,54])
+                cylinder(hauteur, r=radius, $fn=5);
+            // clip
+            intersection() {
+                rotate([0,0,54])
+                    cylinder(hauteur*0.5, r1=radius, r2=radius+4, $fn=5);
+                rotate([0,0,54+72/2])
+                    cylinder(hauteur*0.5, r=radius-5, $fn=5);
+            }
+            translate([0,0,hauteur*0.5])
+            intersection() {
+                rotate([0,0,54])
+                    cylinder(hauteur*0.5, r1=radius+4, r2=radius+2, $fn=5);
+                rotate([0,0,54+72/2])
+                    cylinder(hauteur*0.5, r=radius-5, $fn=5);
+            }
+        }
+        rotate([0,0,54])
+            cylinder(4, r=hauteurExt/2.85, $fn=5);
+
+        translate([0,0,-distance+hauteur*epaisseur])
+            dode_creux();
+    }
 }
 
 module corps_ouvert() {

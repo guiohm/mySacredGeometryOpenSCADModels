@@ -1,46 +1,54 @@
+// Cube Jeu Sphère 33mm
+
+// changelog
+// v5
+// - Bouchon droit
+
+version = 5;
+
 arete = 21.949;
-paroi = 1.5;
-echelleReductionAjustementBouchon = 0.96;
+epaisseurParoi = 1.5;
 r = 0.19; // résolution d'impression sur l'axe Z
 
-//cube_creux();
+// distance entre la paroi extérieure et la découpe
+// minimum semble etre >nozzle_diameter pour Zortrax M200
+offset_decoupe_bouchon = 0.81;
+bouchonOffset = 0.3;
+
+// Permet meilleur encastrement du bouchon pour ne pas qu'il
+// dépasse après collage
+decoupeZOffset = -r/2;
+
 //decoupe_bouchon();
-//corps_ouvert();
-bouchon();
+corps_ouvert();
+// bouchon();
 //trou();
 
 module corps_ouvert() {
-    //rotate([180, 0, 0])
-	difference() {
-		cube_creux();
-		decoupe_bouchon();
-	}
+    difference() {
+        cube_creux();
+        #decoupe_bouchon(offset_decoupe_bouchon, decoupeZOffset);
+    }
 }
 
 module bouchon() {
-    rotate([180, 0, 0])
-	scale([echelleReductionAjustementBouchon, echelleReductionAjustementBouchon, 0.995])
-	difference () {
+    difference () {
         intersection() {
             cube_creux();
-            decoupe_bouchon(echelleReductionAjustementBouchon);
+            decoupe_bouchon(offset_decoupe_bouchon+bouchonOffset);
         }
-	}
+    }
 }
 
 module cube_creux() {
-	difference() {
+    difference() {
         cube(arete, center=true);
-        cube(arete-2*paroi, center=true);
-	}
+        cube(arete-2*epaisseurParoi, center=true);
+    }
 }
 
-module decoupe_bouchon(scale=1) {
-    distance = arete/2;
-	rotate([0,0,45]) translate([0,0,distance])
-		cylinder(paroi, r=arete*0.665, $fn=4, center=true);
-	rotate([0,0,45]) translate([0,0,distance-paroi])
-		cylinder(paroi, r=(arete-paroi/2)*0.632, $fn=4, center=true);
+module decoupe_bouchon(d, zOffset = 0) {
+    a = arete - 2*d;
+    translate([0,0,arete/2+((epaisseurParoi+1)/2)-epaisseurParoi+zOffset])
+        cube([a, a, epaisseurParoi+1], center=true);
 }
-
-
