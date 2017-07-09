@@ -14,7 +14,8 @@ function arete_from(int_radius) =
     int_radius/cos(45);
 
 
-module cuboctahedron(radius) {
+// Warning! wireframe parameter is not working on this version. Please see the similar file in the "models" directory.
+module cuboctahedron(radius, wireframe=false) {
 
   // Cuboctahedron
 
@@ -108,8 +109,11 @@ module cuboctahedron(radius) {
   scale(scale)
     translate([0, 0, -int_radius(radius)])
       place_on_largest_face(sfaces,spoints)
-  //    shape();
-        polyhedron(spoints,sfaces);
+        if (wireframe) {
+          shape();
+        } else {
+          polyhedron(spoints,sfaces);
+        }
 }
 
 // ruler(10);

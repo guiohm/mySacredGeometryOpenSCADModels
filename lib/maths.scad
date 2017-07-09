@@ -1,8 +1,59 @@
 pi = 3.14159265358979;
 epsilon = 0.00000001;
 
+function polygonInRadius(number_of_sides, side_length) =
+    side_length / (2*tan(180/number_of_sides));
 
-////// PARABOLAS //////
+function sideLengthFromPolygonInRadius(number_of_sides, inRadius) =
+    inRadius * (2*tan(180/number_of_sides));
+
+function polygonCircumRadius(number_of_sides, side_length) =
+    side_length / (2*sin(180/number_of_sides));
+
+// rayon cercle inscrit
+function polygon_apothem(arete, sides) =
+  arete/(2*tan(180/sides));
+
+function polygon_apothem_from_circumradius(circumradius, sides) =
+  circumradius*cos(180/sides);
+
+function polygon_circumradius_from_apothem(apothem, sides) =
+  apothem/cos(180/sides);
+
+/////////////////////
+// Platonic solids //
+/////////////////////
+
+/*
+ * pq is Schlafi notation. For instance Octaedra is [3,4].
+ */
+function plat_dihedral(pq) = 2 * asin( cos(180/pq[1])/sin(180/pq[0]));
+
+function plat_circumradius(pq, a) =
+    (a/2)*
+    tan(Cpi/pq[1])*
+    tan(plat_dihedral(pq)/2);
+
+function plat_midradius(pq, a) =
+    (a/2)*
+    cos(Cpi/pq[0])*
+    tan(plat_dihedral(pq)/2);
+
+function plat_inradius(pq,a) =
+    a/(2*tan(Cpi/pq[0]))*
+    sqrt((1-cos(plat_dihedral(pq)))/(1+cos(plat_dihedral(pq))));
+
+function plat_a_from_inradius(pq, inradius) =
+    inradius*(2*tan(Cpi/pq[0]))/
+    sqrt((1-cos(plat_dihedral(pq)))/(1+cos(plat_dihedral(pq))));
+
+/////////////////////
+// Platonic solids //
+/////////////////////
+
+/////////////////////
+////  PARABOLAS  ////
+/////////////////////
 
 //Standard parabola
 function parabolaPoint(x, k) = k * x * x;

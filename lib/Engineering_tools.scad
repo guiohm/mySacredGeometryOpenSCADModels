@@ -67,9 +67,10 @@ module equilateralTriangle (side=10, height=10, center=false){
             polygon(points=[[0,0],[side,0],[side/2,sqrt(3)*side/2]]);
 }
 
-module pyramid(side=10, height=-1, square=false, kheops=false, centerHorizontal=true, centerVertical=false){
+module pyramid(side=10, height=-1, square=false, kheops=false, kheops_concave=false, centerHorizontal=true, centerVertical=false){
 // creates a 3 or 4 sided pyramid.  -1 height= tetrahedron or Johnson's Solid square pyramid
     mHeight= height!=-1 ? height:
+        kheops == true ? side*0.6363636363636363:
         square == true ? (1/sqrt(2))*side:      //square
             sqrt(6)/3*side;                     //tetra
     vert= centerVertical!=true ? [0,0,0]:
@@ -80,7 +81,7 @@ module pyramid(side=10, height=-1, square=false, kheops=false, centerHorizontal=
             [-side/2,-sqrt(3)*side/6 ,0];           //tetra
     translate(vert+horiz){
         // This adds the concave sides and end up to 9 sides
-        if (kheops == true){
+        if (kheops_concave == true){
             d = side*0.0026138221;
             polyhedron (
                 points = [[0,0,0],[0,side,0],[side,side,0],
